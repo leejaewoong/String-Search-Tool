@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(dir:*)",
+      "Bash(npm run build)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(set NODE_ENV=development)",
+      "Bash(electron .)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

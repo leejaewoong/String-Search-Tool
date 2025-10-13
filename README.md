@@ -1,0 +1,44 @@
+# String-Search
+
+GDD JSON 파일에서 문자열을 빠르게 검색하는 Windows 애플리케이션입니다.
+
+## 기능
+- JSON 파일 다국어 문자열 검색
+- Git Pull 지원
+- 검색 히스토리 (최근 10개)
+- 번역 확인 (모든 언어)
+- 클립보드 복사
+- 상세 검색 결과 보기
+
+## 설치
+`String-Search-{version}-x64.exe` 실행
+
+## 사용법
+1. 경로 설정 (⚙️) - GDD ui 폴더 선택
+2. 언어 선택 (기본: KO)
+3. 검색어 입력 후 Enter
+4. 행 더블클릭으로 상세 정보 확인
+
+## 시스템 요구사항
+- Windows 10 이상 (64bit)
+- Git 설치 (Pull 기능 사용 시)
+
+## 검색 규칙
+- 부분 일치 지원
+- 대소문자 구분 없음
+- 추가 문자 제외 (예: "시즌" 검색 시 "시즌패스" 제외)
+
+## 개발
+```bash
+npm install
+npm run dev      # 터미널 1
+npm run electron:dev  # 터미널 2
+```
+
+## 배포
+```bash
+npm run release
+```
+
+## 라이센스
+MIT License

@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-figma-bg text-figma-text font-sans antialiased;
+  }
+
+  * {
+    @apply outline-none;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-figma-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-figma-border rounded hover:bg-figma-text-secondary;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-figma-primary hover:bg-figma-primary-hover text-white px-4 py-2 rounded text-sm font-medium transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-figma-surface hover:bg-figma-border text-figma-text px-4 py-2 rounded text-sm font-medium transition-colors border border-figma-border;
+  }
+
+  .btn-icon {
+    @apply w-8 h-8 flex items-center justify-center rounded hover:bg-figma-surface transition-colors;
+  }
+
+  .input-field {
+    @apply bg-figma-surface border border-figma-border text-figma-text px-3 py-2 rounded text-sm w-full focus:border-figma-primary transition-colors placeholder-figma-text-secondary;
+  }
+
+  .dropdown {
+    @apply bg-figma-surface border border-figma-border text-figma-text px-3 py-2 rounded text-sm focus:border-figma-primary transition-colors cursor-pointer;
+  }
+
+  .table-row {
+    @apply hover:bg-figma-surface cursor-pointer transition-colors;
+  }
+
+  .modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+  }
+
+  .modal-content {
+    @apply bg-figma-surface border border-figma-border rounded-lg p-6 w-full max-w-lg;
+  }
+}
