@@ -42,7 +42,7 @@ export const PathSettingModal: React.FC<PathSettingModalProps> = ({
         <h2 className="text-lg font-semibold mb-4">경로 설정</h2>
 
         <p className="text-sm text-figma-text-secondary mb-4">
-          GDD의 ui 폴더 경로를 지정해주세요.
+          game-design-data/localization/ui 경로를 지정해주세요.
         </p>
 
         <div className="flex gap-2 mb-6">
@@ -54,7 +54,7 @@ export const PathSettingModal: React.FC<PathSettingModalProps> = ({
             className="input-field flex-1"
           />
           <button onClick={handleBrowse} className="btn-secondary">
-            📁 폴더 선택
+            경로 찾기
           </button>
         </div>
 

@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [isSearchDisabled, setIsSearchDisabled] = useState(true);
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null);
   const [currentQuery, setCurrentQuery] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
     loadInitialData();
@@ -38,6 +39,7 @@ const App: React.FC = () => {
 
   const handleSearch = async (query: string) => {
     setCurrentQuery(query);
+    setHasSearched(true);
     const results = await window.electron.searchStrings(query, selectedLanguage);
     setSearchResults(results);
     setSelectedResult(null);
@@ -128,6 +130,11 @@ const App: React.FC = () => {
         onSearch={handleSearch}
         disabled={isSearchDisabled}
         initialQuery={currentQuery}
+        selectedLanguage={selectedLanguage}
+        languages={languages}
+        onLanguageChange={handleLanguageChange}
+        searchHistory={searchHistory}
+        onHistorySelect={handleHistorySelect}
       />
 
       <div className="flex-1 overflow-hidden">
@@ -142,6 +149,7 @@ const App: React.FC = () => {
             results={searchResults}
             onRowClick={handleRowClick}
             onCopy={handleCopy}
+            hasSearched={hasSearched}
           />
         )}
       </div>

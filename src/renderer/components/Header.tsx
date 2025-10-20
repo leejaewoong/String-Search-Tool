@@ -22,42 +22,8 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <div className="flex items-center justify-between p-4 border-b border-figma-border">
       <div className="flex items-center gap-3">
-        <h1 className="text-lg font-semibold">String-Search</h1>
-
-        {languages.length > 0 && (
-          <select
-            value={selectedLanguage}
-            onChange={(e) => onLanguageChange(e.target.value)}
-            className="dropdown"
-          >
-            {languages.map((lang) => (
-              <option key={lang} value={lang}>
-                {lang.toUpperCase()}
-              </option>
-            ))}
-          </select>
-        )}
-
-        {searchHistory.length > 0 && (
-          <select
-            onChange={(e) => {
-              if (e.target.value) {
-                onHistorySelect(e.target.value);
-              }
-            }}
-            className="dropdown text-figma-text-secondary"
-            defaultValue=""
-          >
-            <option value="">최근 검색</option>
-            {searchHistory.map((query, idx) => (
-              <option key={idx} value={query}>
-                {query}
-              </option>
-            ))}
-          </select>
-        )}
+        <h1 className="text-lg font-semibold">String-Search</h1>              
       </div>
-
       <div className="flex items-center gap-2">
         <button
           onClick={onPathSetting}
