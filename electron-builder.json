@@ -2,6 +2,9 @@
   "appId": "com.yourcompany.stringsearch",
   "productName": "String-Search",
   "copyright": "Copyright © 2025",
+  "electronDownload": {
+    "cache": "${TMPDIR}/electron-download"
+  },
   "directories": {
     "output": "dist",
     "buildResources": "build"
@@ -22,17 +25,16 @@
       }
     ],
     "icon": "build/icon.ico",
-    "artifactName": "${productName}-${version}-${arch}.${ext}"
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
+    "signingHashAlgorithms": ["sha256"],
+    "signDlls": false
   },
   "nsis": {
     "oneClick": false,
     "allowToChangeInstallationDirectory": true,
     "createDesktopShortcut": "always",
     "createStartMenuShortcut": true,
-    "shortcutName": "String-Search",
-    "installerIcon": "build/icon.ico",
-    "uninstallerIcon": "build/icon.ico",
-    "installerHeaderIcon": "build/icon.ico"
+    "shortcutName": "String-Search"
   },
   "portable": {
     "artifactName": "${productName}-${version}-portable.${ext}"
