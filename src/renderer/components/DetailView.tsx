@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SearchResult } from '../types';
+import { getTextWidth } from '../utils/textWidth';
 
 interface DetailViewProps {
   result: SearchResult;
@@ -21,7 +22,15 @@ export const DetailView: React.FC<DetailViewProps> = ({
 
   const loadTranslations = async () => {
     const results = await window.electron.searchTranslations(result.id);
-    setTranslations(results);
+
+    // 실제 텍스트 렌더링 너비로 정렬 (내림차순)
+    const sortedResults = results.sort((a, b) => {
+      const widthA = getTextWidth(a.value);
+      const widthB = getTextWidth(b.value);
+      return widthB - widthA;
+    });
+
+    setTranslations(sortedResults);
   };
 
   return (
