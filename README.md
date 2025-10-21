@@ -35,6 +35,16 @@ npm run dev      # 터미널 1
 npm run electron:dev  # 터미널 2
 ```
 
+### 자주 발생하는 오류와 해결
+- Error launching app / Cannot find module '...build\\main.js'
+  - 원인: 빌드 산출물(`build/main.js`)이 없음
+  - 해결: `npm run build` 또는 `npm start`를 먼저 실행
+
+### 빠른 실행/권장 흐름
+- 최초 1회: `npm run build`로 `build/main.js` 생성
+- 개발 모드: 두 터미널에서 `npm run dev`와 `npm run electron:dev`
+- 한 번에 실행: `npm start` (빌드 후 Electron 실행)
+
 ## 배포
 ```bash
 npm run release

@@ -60,6 +60,11 @@ npm run electron # 실행
 npm start
 ```
 
+### 자주 발생하는 오류와 해결
+- Error launching app / Cannot find module '...build\\main.js'
+  - 원인: 빌드 산출물(`build/main.js`)이 없음
+  - 해결: `npm run build` 또는 `npm start`를 먼저 실행
+
 ## 📦 배포 파일 생성
 
 ### Windows 인스톨러 + 포터블 버전 생성:
