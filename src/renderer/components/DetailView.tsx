@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SearchResult } from '../types';
+import { getTextWidth } from '../utils/textWidth';
 
 interface DetailViewProps {
   result: SearchResult;
@@ -21,7 +22,15 @@ export const DetailView: React.FC<DetailViewProps> = ({
 
   const loadTranslations = async () => {
     const results = await window.electron.searchTranslations(result.id);
-    setTranslations(results);
+
+    // 실제 텍스트 렌더링 너비로 정렬 (내림차순)
+    const sortedResults = results.sort((a, b) => {
+      const widthA = getTextWidth(a.value);
+      const widthB = getTextWidth(b.value);
+      return widthB - widthA;
+    });
+
+    setTranslations(sortedResults);
   };
 
   return (
@@ -62,54 +71,62 @@ export const DetailView: React.FC<DetailViewProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-4">
-        <div className="mb-4 p-3 bg-figma-surface rounded border border-figma-border">
+      <div className="flex-1 flex flex-col p-4 min-h-0">
+        <div className="mb-4 p-3 bg-figma-surface rounded border border-figma-border flex-shrink-0">
           <div className="text-xs text-figma-text-secondary mb-1">String ID</div>
           <div className="font-mono text-sm">{result.id}</div>
         </div>
 
         {activeTab === 'translations' ? (
-          <div>
-            <h3 className="text-sm font-semibold mb-3">모든 언어 번역</h3>
+          <>
             {translations.length === 0 ? (
               <div className="text-figma-text-secondary text-sm">
                 번역을 찾을 수 없습니다.
               </div>
             ) : (
-              <table className="w-full text-sm">
-                <thead className="border-b border-figma-border">
-                  <tr>
-                    <th className="text-left p-3 font-medium text-figma-text-secondary">
-                      언어
-                    </th>
-                    <th className="text-left p-3 font-medium text-figma-text-secondary">
-                      String
-                    </th>
-                    <th className="w-20 p-3"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {translations.map((trans, idx) => (
-                    <tr key={idx} className="border-b border-figma-border">
-                      <td className="p-3 text-figma-text-secondary">
-                        {trans.filename.toUpperCase()}
-                      </td>
-                      <td className="p-3">{trans.value}</td>
-                      <td className="p-3">
-                        <button
-                          onClick={() => onCopy(trans.value)}
-                          className="btn-icon text-xs"
-                          title="클립보드에 복사"
+              <div className="border border-figma-border rounded overflow-hidden flex-1 flex flex-col min-h-0">
+                <div className="overflow-auto flex-1">
+                  <table className="w-full text-sm">
+                    <thead className="sticky top-0 border-b border-figma-border bg-figma-bg z-10">
+                      <tr>
+                        <th className="text-left p-3 font-medium">
+                          언어
+                        </th>
+                        <th className="text-left p-3 font-medium">
+                          String (표시 너비 순)
+                        </th>
+                        <th className="w-20 p-3 font-medium">
+                          클립보드
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {translations.map((trans, idx) => (
+                        <tr 
+                          key={idx} 
+                          className="table-row border-b border-figma-border"
                         >
-                          📋
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          <td className="p-3 text-figma-text-secondary">
+                            {trans.filename.toUpperCase()}
+                          </td>
+                          <td className="p-3  text-figma-text-secondary">{trans.value}</td>
+                          <td className="pl-6">
+                            <button
+                              onClick={() => onCopy(trans.value)}
+                              className="btn-icon text-xs"
+                              title="클립보드에 복사"
+                            >
+                              📋
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             )}
-          </div>
+          </>
         ) : (
           <div>
             <h3 className="text-sm font-semibold mb-3">유사한 String</h3>

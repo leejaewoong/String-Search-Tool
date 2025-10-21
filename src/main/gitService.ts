@@ -12,7 +12,16 @@ class GitService {
       const log = await git.log({ maxCount: 1 });
 
       if (log.latest) {
-        return new Date(log.latest.date).toLocaleString('ko-KR');
+        return new Date(log.latest.date).toLocaleString('ko-KR', {
+          timeZone: 'Asia/Seoul',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        });
       }
     } catch (error) {
       console.error('Git log 조회 실패:', error);
