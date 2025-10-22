@@ -6,6 +6,7 @@ interface SearchResultsProps {
   onRowClick: (result: SearchResult) => void;
   onCopy: (text: string) => void;
   hasSearched?: boolean;
+  isSearchDisabled?: boolean;
 }
 
 export const SearchResults: React.FC<SearchResultsProps> = ({
@@ -13,11 +14,16 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   onRowClick,
   onCopy,
   hasSearched = false,
+  isSearchDisabled = false,
 }) => {
   if (results.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-figma-text-secondary">
-        {hasSearched ? '일치하는 String이 없습니다.' : '안녕하세요, 저는 UX Design팀에서 만든 프로그램입니다 : )'}
+        {isSearchDisabled
+          ? "먼저 우측 상단의 ⚙️을 통해 경로를 설정해주세요."
+          : hasSearched
+            ? '일치하는 String이 없습니다.'
+            : '안녕하세요, 저는 UX Design팀에서 만든 프로그램입니다 : )'}
       </div>
     );
   }

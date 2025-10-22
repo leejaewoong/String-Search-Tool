@@ -5,6 +5,7 @@ import { SearchResults } from './components/SearchResults';
 import { StatusBar } from './components/StatusBar';
 import { PathSettingModal } from './components/PathSettingModal';
 import { DetailView } from './components/DetailView';
+import { LoadingOverlay } from './components/LoadingOverlay';
 import { SearchResult } from './types';
 
 const App: React.FC = () => {
@@ -19,6 +20,7 @@ const App: React.FC = () => {
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null);
   const [currentQuery, setCurrentQuery] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     loadInitialData();
@@ -34,7 +36,12 @@ const App: React.FC = () => {
     const updateTime = await window.electron.getLastUpdateTime();
     setLastUpdateTime(updateTime);
 
-    setIsSearchDisabled(langs.length === 0);
+    const folderPath = await window.electron.getFolderPath();
+    const isValidPath = folderPath
+      ? (folderPath.includes('\\game-design-data\\localization\\ui') ||
+         folderPath.includes('/game-design-data/localization/ui'))
+      : false;
+    setIsSearchDisabled(!isValidPath);
   };
 
   const handleSearch = async (query: string) => {
@@ -65,6 +72,7 @@ const App: React.FC = () => {
   };
 
   const handleGitPull = async () => {
+    setIsLoading(true);
     try {
       await window.electron.gitPull();
       const updateTime = await window.electron.getLastUpdateTime();
@@ -72,11 +80,17 @@ const App: React.FC = () => {
 
       const langs = await window.electron.getLanguages();
       setLanguages(langs);
-      setIsSearchDisabled(langs.length === 0);
 
       alert('업데이트 완료');
     } catch (error) {
-      alert('Git Pull 실패: ' + error);
+      const errorMessage = String(error);
+      if (errorMessage.includes('경로가 설정되지 않았습니다')) {
+        alert('경로가 설정되지 않았습니다.');
+      } else {
+        alert('Git Pull 실패: ' + error);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -88,7 +102,10 @@ const App: React.FC = () => {
 
       const langs = await window.electron.getLanguages();
       setLanguages(langs);
-      setIsSearchDisabled(langs.length === 0);
+
+      const isValidPath = path.includes('\\game-design-data\\localization\\ui') ||
+                          path.includes('/game-design-data/localization/ui');
+      setIsSearchDisabled(!isValidPath);
 
       if (langs.length > 0) {
         setSelectedLanguage(langs[0]);
@@ -150,6 +167,7 @@ const App: React.FC = () => {
             onRowClick={handleRowClick}
             onCopy={handleCopy}
             hasSearched={hasSearched}
+            isSearchDisabled={isSearchDisabled}
           />
         )}
       </div>
@@ -163,6 +181,8 @@ const App: React.FC = () => {
         onConfirm={handlePathConfirm}
         onBrowse={handleBrowse}
       />
+
+      <LoadingOverlay isLoading={isLoading} />
     </div>
   );
 };

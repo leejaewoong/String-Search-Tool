@@ -7,6 +7,8 @@ export interface SearchResult {
 export interface ElectronAPI {
   searchStrings: (query: string, language: string) => Promise<SearchResult[]>;
   getLanguages: () => Promise<string[]>;
+  getFolderPath: () => Promise<string | null>;
+  validateFolderPath: (path: string) => Promise<boolean>;
   setFolderPath: (path: string) => Promise<boolean>;
   browseFolderPath: () => Promise<string | null>;
   gitPull: () => Promise<boolean>;
