@@ -89,7 +89,7 @@ export const DetailView: React.FC<DetailViewProps> = ({
                   <table className="w-full text-sm">
                     <thead className="sticky top-0 border-b border-figma-border bg-figma-bg z-10">
                       <tr>
-                        <th className="text-left p-3 font-medium">
+                        <th className="w-20 text-left p-3 font-medium">
                           언어
                         </th>
                         <th className="text-left p-3 font-medium">
