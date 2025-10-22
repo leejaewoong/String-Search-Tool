@@ -7,9 +7,38 @@ interface SearchResult {
   value: string;
   filename: string;
   length: number;
+  distance?: number;
 }
 
 class SearchService {
+  // 레벤슈타인 거리 계산 (두 문자열의 차이)
+  private levenshteinDistance(str1: string, str2: string): number {
+    const len1 = str1.length;
+    const len2 = str2.length;
+    const matrix: number[][] = [];
+
+    for (let i = 0; i <= len1; i++) {
+      matrix[i] = [i];
+    }
+
+    for (let j = 0; j <= len2; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= len1; i++) {
+      for (let j = 1; j <= len2; j++) {
+        const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j - 1] + cost
+        );
+      }
+    }
+
+    return matrix[len1][len2];
+  }
+
   search(query: string, language: string): SearchResult[] {
     const fileData = fileService.getFileData(language);
     if (!fileData) {
@@ -26,27 +55,21 @@ class SearchService {
       const matchesId = lowerId.includes(lowerQuery);
       const matchesValue = lowerValue.includes(lowerQuery);
 
-      // 추가 문자 체크: 검색어가 값에 포함되고, 값이 검색어만 포함하거나 검색어의 일부여야 함
-      const isExactOrSubstring =
-        lowerValue === lowerQuery ||
-        lowerQuery.includes(lowerValue);
-
-      if ((matchesId || matchesValue) && isExactOrSubstring) {
+      if (matchesId || matchesValue) {
+        const distance = this.levenshteinDistance(lowerQuery, lowerValue);
         results.push({
           id,
           value,
           filename: `ui_${language}.json`,
           length: value.length,
+          distance,
         });
       }
     }
 
-    // 정렬: 1. 글자수 내림차순, 2. 파일명 오름차순
+    // 정렬: 레벤슈타인 거리 오름차순 (차이가 적은 순)
     results.sort((a, b) => {
-      if (a.length !== b.length) {
-        return b.length - a.length;
-      }
-      return a.filename.localeCompare(b.filename);
+      return (a.distance || 0) - (b.distance || 0);
     });
 
     return results;

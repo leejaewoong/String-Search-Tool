@@ -30,8 +30,13 @@ export const PathSettingModal: React.FC<PathSettingModalProps> = ({
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (path.trim()) {
+      const isValid = await window.electron.validateFolderPath(path);
+      if (!isValid) {
+        alert('올바른 경로가 아닙니다.');
+        return;
+      }
       onConfirm(path);
     }
   };

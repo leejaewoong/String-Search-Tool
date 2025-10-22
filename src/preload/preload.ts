@@ -7,6 +7,12 @@ contextBridge.exposeInMainWorld('electron', {
   getLanguages: () =>
     ipcRenderer.invoke('get-languages'),
 
+  getFolderPath: () =>
+    ipcRenderer.invoke('get-folder-path'),
+
+  validateFolderPath: (path: string) =>
+    ipcRenderer.invoke('validate-folder-path', path),
+
   setFolderPath: (path: string) =>
     ipcRenderer.invoke('set-folder-path', path),
 

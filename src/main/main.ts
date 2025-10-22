@@ -12,6 +12,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: path.join(__dirname, '../../build/icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -72,6 +73,17 @@ function registerIpcHandlers() {
       properties: ['openDirectory']
     });
     return result.canceled ? null : result.filePaths[0];
+  });
+
+  // 경로 가져오기
+  ipcMain.handle('get-folder-path', async () => {
+    return store.get('folderPath') as string | null;
+  });
+
+  // 경로 검증
+  ipcMain.handle('validate-folder-path', async (event, folderPath) => {
+    return folderPath.includes('\\game-design-data\\localization\\ui') ||
+           folderPath.includes('/game-design-data/localization/ui');
   });
 
   // 경로 설정
