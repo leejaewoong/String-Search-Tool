@@ -18,7 +18,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 }) => {
   if (results.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-figma-text-secondary">
+      <div className="flex items-center justify-center h-full text-figma-text-secondary">
         {isSearchDisabled
           ? "먼저 우측 상단의 ⚙️을 통해 경로를 설정해주세요."
           : hasSearched
