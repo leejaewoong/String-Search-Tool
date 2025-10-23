@@ -36,4 +36,7 @@ contextBridge.exposeInMainWorld('electron', {
 
   searchTranslations: (stringId: string) =>
     ipcRenderer.invoke('search-translations', stringId),
+
+  searchSynonyms: (stringId: string, targetLanguage: string) =>
+    ipcRenderer.invoke('search-synonyms', stringId, targetLanguage),
 });

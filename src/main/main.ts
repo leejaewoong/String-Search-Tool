@@ -62,6 +62,11 @@ function registerIpcHandlers() {
     return searchService.searchTranslations(stringId);
   });
 
+  // 유의어 검색
+  ipcMain.handle('search-synonyms', async (_event, stringId, targetLanguage) => {
+    return searchService.searchSynonyms(stringId, targetLanguage);
+  });
+
   // 언어 목록
   ipcMain.handle('get-languages', async () => {
     return fileService.getLanguages();

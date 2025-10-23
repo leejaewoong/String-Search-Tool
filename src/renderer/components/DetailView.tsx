@@ -6,15 +6,20 @@ interface DetailViewProps {
   result: SearchResult;
   onClose: () => void;
   onCopy: (text: string) => void;
+  selectedLanguage: string;
 }
 
 export const DetailView: React.FC<DetailViewProps> = ({
   result,
   onClose,
   onCopy,
+  selectedLanguage,
 }) => {
   const [translations, setTranslations] = useState<SearchResult[]>([]);
+  const [synonyms, setSynonyms] = useState<SearchResult[]>([]);
+  const [synonymsList, setSynonymsList] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'translations' | 'synonyms'>('translations');
+  const [isLoadingSynonyms, setIsLoadingSynonyms] = useState(false);
 
   useEffect(() => {
     loadTranslations();
@@ -32,6 +37,29 @@ export const DetailView: React.FC<DetailViewProps> = ({
 
     setTranslations(sortedResults);
   };
+
+  const loadSynonyms = async () => {
+    setIsLoadingSynonyms(true);
+    try {
+      // 현재 선택된 언어로 유의어 검색
+      const data = await window.electron.searchSynonyms(result.id, selectedLanguage);
+      setSynonyms(data.results);
+      setSynonymsList(data.synonymsList);
+    } catch (error) {
+      console.error('유의어 검색 오류:', error);
+      setSynonyms([]);
+      setSynonymsList([]);
+    } finally {
+      setIsLoadingSynonyms(false);
+    }
+  };
+
+  // 유의어 탭 선택 시 또는 언어 변경 시 로드
+  useEffect(() => {
+    if (activeTab === 'synonyms') {
+      loadSynonyms();
+    }
+  }, [activeTab, selectedLanguage]);
 
   return (
     <div className="flex flex-col h-full">
@@ -128,15 +156,85 @@ export const DetailView: React.FC<DetailViewProps> = ({
             )}
           </>
         ) : (
-          <div>
-            <h3 className="text-sm font-semibold mb-3">유사한 String</h3>
-            <div className="text-figma-text-secondary text-sm">
-              유사한 String이 없습니다.
-              <div className="mt-2 text-xs">
-                (향후 한국어 의미론적 유사도 검색 기능이 추가될 예정입니다)
+          <>
+            {isLoadingSynonyms ? (
+              <div className="flex items-center justify-center h-32 text-figma-text-secondary">
+                <div className="text-sm">유의어 검색 중...</div>
               </div>
-            </div>
-          </div>
+            ) : (
+              <>
+                {/* WordNet 유의어 목록 표시 */}
+                {synonymsList.length > 0 && (
+                  <div className="mb-4 flex-shrink-0">
+                    <div className="text-xs text-figma-text-secondary mb-2">
+                      유의어 ({synonymsList.length}개)
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {synonymsList.map((syn, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-1 bg-figma-bg text-xs rounded border border-figma-border text-figma-text-secondary"
+                        >
+                          {syn}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 검색 결과 표시 */}
+                {synonyms.length === 0 ? (
+                  <div className="text-figma-text-secondary text-sm">
+                    {synonymsList.length > 0
+                      ? '유의어 검색 결과가 없습니다.'
+                      : '유의어를 찾을 수 없습니다.'}
+                  </div>
+                ) : (
+                  <div className="border border-figma-border rounded overflow-hidden flex-1 flex flex-col min-h-0">
+                    <div className="overflow-auto flex-1">
+                      <table className="w-full text-sm">
+                        <thead className="sticky top-0 border-b border-figma-border bg-figma-bg z-10">
+                          <tr>
+                            <th className="w-96 text-left p-3 font-medium">
+                              String ID
+                            </th>
+                            <th className="text-left p-3 font-medium">
+                              String (유의어 매칭)
+                            </th>
+                            <th className="w-20 p-3 font-medium">
+                              클립보드
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {synonyms.map((syn, idx) => (
+                            <tr
+                              key={idx}
+                              className="table-row border-b border-figma-border"
+                            >
+                              <td className="p-3 text-figma-text-secondary">
+                                {syn.id}
+                              </td>
+                              <td className="p-3 text-figma-text-secondary">{syn.value}</td>
+                              <td className="pl-6">
+                                <button
+                                  onClick={() => onCopy(syn.value)}
+                                  className="btn-icon text-xs"
+                                  title="클립보드에 복사"
+                                >
+                                  📋
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </>
         )}
       </div>
     </div>
