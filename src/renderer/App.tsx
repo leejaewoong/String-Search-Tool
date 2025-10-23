@@ -160,6 +160,7 @@ const App: React.FC = () => {
             result={selectedResult}
             onClose={handleCloseDetail}
             onCopy={handleCopy}
+            selectedLanguage={selectedLanguage}
           />
         ) : (
           <SearchResults

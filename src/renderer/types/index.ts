@@ -2,6 +2,13 @@ export interface SearchResult {
   id: string;
   value: string;
   filename: string;
+  matchType?: 'direct' | 'synonym';
+  synonymSource?: string;
+}
+
+export interface SynonymSearchResult {
+  results: SearchResult[];
+  synonymsList: string[];
 }
 
 export interface ElectronAPI {
@@ -17,6 +24,7 @@ export interface ElectronAPI {
   saveSearchHistory: (query: string) => Promise<boolean>;
   getSearchHistory: () => Promise<string[]>;
   searchTranslations: (stringId: string) => Promise<SearchResult[]>;
+  searchSynonyms: (stringId: string, targetLanguage: string) => Promise<SynonymSearchResult>;
 }
 
 declare global {
