@@ -39,4 +39,23 @@ contextBridge.exposeInMainWorld('electron', {
 
   searchSynonyms: (stringId: string, targetLanguage: string) =>
     ipcRenderer.invoke('search-synonyms', stringId, targetLanguage),
+
+  // Analytics
+  trackSearch: (language: string) =>
+    ipcRenderer.invoke('track-search', language),
+
+  trackGitPull: () =>
+    ipcRenderer.invoke('track-git-pull'),
+
+  trackSynonymsView: () =>
+    ipcRenderer.invoke('track-synonyms-view'),
+
+  trackTranslationsView: () =>
+    ipcRenderer.invoke('track-translations-view'),
+
+  trackDetailViewOpen: () =>
+    ipcRenderer.invoke('track-detail-view-open'),
+
+  getAnalyticsData: () =>
+    ipcRenderer.invoke('get-analytics-data'),
 });

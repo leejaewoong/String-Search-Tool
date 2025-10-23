@@ -54,6 +54,9 @@ const App: React.FC = () => {
 
     const history = await window.electron.getSearchHistory();
     setSearchHistory(history);
+
+    // Analytics: 검색 이벤트 추적
+    await window.electron.trackSearch(selectedLanguage);
   };
 
   const handleLanguageChange = (lang: string) => {
@@ -80,6 +83,9 @@ const App: React.FC = () => {
 
       const langs = await window.electron.getLanguages();
       setLanguages(langs);
+
+      // Analytics: Git Pull 이벤트 추적
+      await window.electron.trackGitPull();
 
       alert('업데이트 완료');
     } catch (error) {
@@ -123,8 +129,11 @@ const App: React.FC = () => {
     await window.electron.copyToClipboard(text);
   };
 
-  const handleRowClick = (result: SearchResult) => {
+  const handleRowClick = async (result: SearchResult) => {
     setSelectedResult(result);
+
+    // Analytics: 상세 뷰 열기 이벤트 추적
+    await window.electron.trackDetailViewOpen();
   };
 
   const handleCloseDetail = () => {

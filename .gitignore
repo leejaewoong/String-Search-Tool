@@ -1,11 +1,37 @@
+# Dependencies
 node_modules/
+
+# Build output
 build/
 dist/
+
+# Cache
+.cache/
+cache/
+*.cache
+
+# OS files
 .DS_Store
+
+# Logs (모든 디렉토리)
+**/*.log
 *.log
+
+# IDE
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
+
+# Editor temporary files (모든 디렉토리)
+**/*.swp
+**/*.swo
+**/*~
+
+# Environment variables (모든 .env 파일)
+.env
+.env.local
+.env.development
+.env.production
+**/.env
+
+# Cache
 ${TMPDIR}/

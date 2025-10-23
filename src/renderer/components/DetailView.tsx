@@ -58,6 +58,11 @@ export const DetailView: React.FC<DetailViewProps> = ({
   useEffect(() => {
     if (activeTab === 'synonyms') {
       loadSynonyms();
+      // Analytics: 유의어 조회 이벤트 추적
+      window.electron.trackSynonymsView();
+    } else if (activeTab === 'translations') {
+      // Analytics: 번역 조회 이벤트 추적
+      window.electron.trackTranslationsView();
     }
   }, [activeTab, selectedLanguage]);
 

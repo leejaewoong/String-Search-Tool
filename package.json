@@ -6,17 +6,22 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "electron-store": "^8.1.0",
     "fuse.js": "^6.6.2",
     "natural": "^6.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "simple-git": "^3.19.0"
+    "simple-git": "^3.19.0",
+    "universal-analytics": "^0.5.3",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "@types/universal-analytics": "^0.4.8",
+    "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.16",
     "copy-webpack-plugin": "^13.0.1",
     "cross-env": "^7.0.3",

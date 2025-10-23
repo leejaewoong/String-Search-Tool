@@ -1,9 +1,11 @@
+import 'dotenv/config';
 import { app, BrowserWindow, ipcMain, dialog, clipboard } from 'electron';
 import * as path from 'path';
 import Store from 'electron-store';
 import { fileService } from './fileService';
 import { searchService } from './searchService';
 import { gitService } from './gitService';
+import { analyticsService } from './analyticsService';
 
 const store = new Store();
 let mainWindow: BrowserWindow | null = null;
@@ -134,5 +136,35 @@ function registerIpcHandlers() {
 
   ipcMain.handle('get-search-history', async () => {
     return (store.get('searchHistory') as string[]) || [];
+  });
+
+  // Analytics 이벤트 추적
+  ipcMain.handle('track-search', async (_event, language) => {
+    analyticsService.trackSearch(language);
+    return true;
+  });
+
+  ipcMain.handle('track-git-pull', async () => {
+    analyticsService.trackGitPull();
+    return true;
+  });
+
+  ipcMain.handle('track-synonyms-view', async () => {
+    analyticsService.trackSynonymsView();
+    return true;
+  });
+
+  ipcMain.handle('track-translations-view', async () => {
+    analyticsService.trackTranslationsView();
+    return true;
+  });
+
+  ipcMain.handle('track-detail-view-open', async () => {
+    analyticsService.trackDetailViewOpen();
+    return true;
+  });
+
+  ipcMain.handle('get-analytics-data', async () => {
+    return analyticsService.getAnalyticsData();
   });
 }

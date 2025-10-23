@@ -11,6 +11,20 @@ export interface SynonymSearchResult {
   synonymsList: string[];
 }
 
+export interface AnalyticsData {
+  userId: string;
+  firstInstalled: string;
+  appVersion: string;
+  totalSearches: number;
+  totalGitPulls: number;
+  languageUsage: Record<string, number>;
+  features: {
+    synonymsViews: number;
+    translationsViews: number;
+    detailViewOpens: number;
+  };
+}
+
 export interface ElectronAPI {
   searchStrings: (query: string, language: string) => Promise<SearchResult[]>;
   getLanguages: () => Promise<string[]>;
@@ -25,6 +39,12 @@ export interface ElectronAPI {
   getSearchHistory: () => Promise<string[]>;
   searchTranslations: (stringId: string) => Promise<SearchResult[]>;
   searchSynonyms: (stringId: string, targetLanguage: string) => Promise<SynonymSearchResult>;
+  trackSearch: (language: string) => Promise<boolean>;
+  trackGitPull: () => Promise<boolean>;
+  trackSynonymsView: () => Promise<boolean>;
+  trackTranslationsView: () => Promise<boolean>;
+  trackDetailViewOpen: () => Promise<boolean>;
+  getAnalyticsData: () => Promise<AnalyticsData>;
 }
 
 declare global {
