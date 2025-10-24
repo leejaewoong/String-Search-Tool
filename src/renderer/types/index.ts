@@ -25,6 +25,11 @@ export interface AnalyticsData {
   };
 }
 
+export interface PredictedTranslation {
+  language: string;
+  value: string;
+}
+
 export interface ElectronAPI {
   searchStrings: (query: string, language: string) => Promise<SearchResult[]>;
   getLanguages: () => Promise<string[]>;
@@ -39,11 +44,13 @@ export interface ElectronAPI {
   getSearchHistory: () => Promise<string[]>;
   searchTranslations: (stringId: string) => Promise<SearchResult[]>;
   searchSynonyms: (stringId: string, targetLanguage: string) => Promise<SynonymSearchResult>;
+  getPredictedTranslations: (query: string) => Promise<PredictedTranslation[]>;
   trackSearch: (language: string) => Promise<boolean>;
   trackGitPull: () => Promise<boolean>;
   trackSynonymsView: () => Promise<boolean>;
   trackTranslationsView: () => Promise<boolean>;
   trackDetailViewOpen: () => Promise<boolean>;
+  trackPredictedTranslations: () => Promise<boolean>;
   getAnalyticsData: () => Promise<AnalyticsData>;
 }
 
