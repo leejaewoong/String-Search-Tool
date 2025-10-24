@@ -6,6 +6,7 @@ import { StatusBar } from './components/StatusBar';
 import { PathSettingModal } from './components/PathSettingModal';
 import { DetailView } from './components/DetailView';
 import { LoadingOverlay } from './components/LoadingOverlay';
+import { PredictedTranslations } from './components/PredictedTranslations';
 import { SearchResult } from './types';
 
 const App: React.FC = () => {
@@ -21,6 +22,8 @@ const App: React.FC = () => {
   const [currentQuery, setCurrentQuery] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPredicted, setShowPredicted] = useState(false);
+  const [predictedTranslations, setPredictedTranslations] = useState<Array<{language: string, value: string}>>([]);
 
   useEffect(() => {
     loadInitialData();
@@ -47,6 +50,7 @@ const App: React.FC = () => {
   const handleSearch = async (query: string) => {
     setCurrentQuery(query);
     setHasSearched(true);
+    setShowPredicted(false);
     const results = await window.electron.searchStrings(query, selectedLanguage);
     setSearchResults(results);
     setSelectedResult(null);
@@ -140,6 +144,26 @@ const App: React.FC = () => {
     setSelectedResult(null);
   };
 
+  const handleShowPredicted = async () => {
+    setIsLoading(true);
+    try {
+      const translations = await window.electron.getPredictedTranslations(currentQuery);
+      setPredictedTranslations(translations);
+      setShowPredicted(true);
+
+      // Analytics: AI 예상 번역 조회 이벤트 추적
+      await window.electron.trackPredictedTranslations();
+    } catch (error) {
+      alert('AI 예상 번역을 가져오는데 실패했습니다: ' + error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClosePredicted = () => {
+    setShowPredicted(false);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-figma-bg text-figma-text">
       <Header
@@ -171,6 +195,12 @@ const App: React.FC = () => {
             onCopy={handleCopy}
             selectedLanguage={selectedLanguage}
           />
+        ) : showPredicted ? (
+          <PredictedTranslations
+            translations={predictedTranslations}
+            onCopy={handleCopy}
+            onClose={handleClosePredicted}
+          />
         ) : (
           <SearchResults
             results={searchResults}
@@ -178,6 +208,7 @@ const App: React.FC = () => {
             onCopy={handleCopy}
             hasSearched={hasSearched}
             isSearchDisabled={isSearchDisabled}
+            onShowPredicted={handleShowPredicted}
           />
         )}
       </div>

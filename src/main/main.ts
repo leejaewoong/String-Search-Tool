@@ -6,6 +6,7 @@ import { fileService } from './fileService';
 import { searchService } from './searchService';
 import { gitService } from './gitService';
 import { analyticsService } from './analyticsService';
+import { openaiService } from './openaiService';
 
 const store = new Store();
 let mainWindow: BrowserWindow | null = null;
@@ -67,6 +68,11 @@ function registerIpcHandlers() {
   // 유의어 검색
   ipcMain.handle('search-synonyms', async (_event, stringId, targetLanguage) => {
     return searchService.searchSynonyms(stringId, targetLanguage);
+  });
+
+  // AI 예상 번역
+  ipcMain.handle('get-predicted-translations', async (_event, query) => {
+    return openaiService.getPredictedTranslations(query);
   });
 
   // 언어 목록
@@ -161,6 +167,11 @@ function registerIpcHandlers() {
 
   ipcMain.handle('track-detail-view-open', async () => {
     analyticsService.trackDetailViewOpen();
+    return true;
+  });
+
+  ipcMain.handle('track-predicted-translations', async () => {
+    analyticsService.trackPredictedTranslations();
     return true;
   });
 

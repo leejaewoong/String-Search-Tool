@@ -7,6 +7,7 @@ interface SearchResultsProps {
   onCopy: (text: string) => void;
   hasSearched?: boolean;
   isSearchDisabled?: boolean;
+  onShowPredicted?: () => void;
 }
 
 export const SearchResults: React.FC<SearchResultsProps> = ({
@@ -15,15 +16,26 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   onCopy,
   hasSearched = false,
   isSearchDisabled = false,
+  onShowPredicted,
 }) => {
   if (results.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-figma-text-secondary">
-        {isSearchDisabled
-          ? "먼저 우측 상단의 ⚙️을 통해 경로를 설정해주세요."
-          : hasSearched
-            ? '일치하는 String이 없습니다.'
-            : '안녕하세요, 저는 UX Design팀에서 만든 프로그램입니다 : )'}
+      <div className="flex flex-col items-center justify-center h-full text-figma-text-secondary gap-4">
+        <div>
+          {isSearchDisabled
+            ? "먼저 우측 상단의 ⚙️을 통해 경로를 설정해주세요."
+            : hasSearched
+              ? '일치하는 String이 없습니다.'
+              : '안녕하세요, 저는 UX Design팀에서 만든 프로그램입니다 : )'}
+        </div>
+        {hasSearched && !isSearchDisabled && onShowPredicted && (
+          <button
+            onClick={onShowPredicted}
+            className="mt-5 px-4 py-2 bg-figma-primary text-white rounded hover:opacity-80 transition-opacity text-md font-medium"
+          >
+            AI 예상 번역 확인하기
+          </button>
+        )}
       </div>
     );
   }

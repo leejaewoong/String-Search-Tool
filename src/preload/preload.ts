@@ -40,6 +40,9 @@ contextBridge.exposeInMainWorld('electron', {
   searchSynonyms: (stringId: string, targetLanguage: string) =>
     ipcRenderer.invoke('search-synonyms', stringId, targetLanguage),
 
+  getPredictedTranslations: (query: string) =>
+    ipcRenderer.invoke('get-predicted-translations', query),
+
   // Analytics
   trackSearch: (language: string) =>
     ipcRenderer.invoke('track-search', language),
@@ -55,6 +58,9 @@ contextBridge.exposeInMainWorld('electron', {
 
   trackDetailViewOpen: () =>
     ipcRenderer.invoke('track-detail-view-open'),
+
+  trackPredictedTranslations: () =>
+    ipcRenderer.invoke('track-predicted-translations'),
 
   getAnalyticsData: () =>
     ipcRenderer.invoke('get-analytics-data'),

@@ -11,7 +11,9 @@
       "Bash(powershell:*)",
       "Bash(node:*)",
       "Bash(del \"src\\main\\test-wordnet.ts\")",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Read(//c/Users/iamle/바탕 화면/game-design-data/localization/ui/**)",
+      "Bash(npx ts-node scripts/generateTrainingData.ts)"
     ],
     "deny": [],
     "ask": []
