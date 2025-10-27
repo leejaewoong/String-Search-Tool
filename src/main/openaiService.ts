@@ -10,7 +10,7 @@ interface PredictedTranslation {
 
 // 지원하는 언어 목록
 const SUPPORTED_LANGUAGES = [
-  'ar', 'ca', 'de', 'es', 'es-MX', 'fr', 'ga-IE', 'hi', 'id', 'it',
+  'ar', 'ca', 'en', 'de', 'es', 'es-MX', 'fr', 'ga-IE', 'hi', 'id', 'it',
   'ja', 'ko', 'ku', 'pl', 'pt', 'pt-BR', 'ru', 'th', 'tr', 'uk',
   'ur', 'vi', 'zh', 'zh-CN', 'zh-TW'
 ];
@@ -25,9 +25,9 @@ class OpenAIService {
     console.log('[OpenAI] Using model:', this.model);
   }
 
-  async getPredictedTranslations(englishText: string): Promise<PredictedTranslation[]> {
+  async getPredictedTranslations(text: string): Promise<PredictedTranslation[]> {
     if (!this.apiKey) {
-      throw new Error('OpenAI API 키가 설정되지 않았습니다. .env 파일에 OPENAI_API_KEY를 추가해주세요.');
+      throw new Error('OpenAI API 키가 설정되지 않았습니다.');
     }
 
     try {
@@ -45,15 +45,16 @@ class OpenAIService {
           messages: [
             {
               role: 'system',
-              content: 'You are a professional game UI localization expert. Translate English text to multiple languages following game industry localization standards and UI text conventions.'
+              content: 'You are a professional game UI localization expert. Translate text to multiple languages following game industry localization standards and UI text conventions. Always respond with valid JSON only.'
             },
             {
               role: 'user',
-              content: `Translate the following English text to all supported languages (${langCodes}):\n\n"${englishText}"`
+              content: `Translate the following text to all supported languages (${langCodes}):\n\n"${text}"\n\nRespond with a JSON object where keys are language codes and values are translations. Example: {"ko":"번역","ja":"翻訳",...}`
             }
           ],
           temperature: 0.3,
-          max_tokens: 1000,
+          max_tokens: 1500,
+          response_format: { type: "json_object" },
         }),
       });
 
@@ -69,8 +70,16 @@ class OpenAIService {
         throw new Error('OpenAI로부터 응답을 받지 못했습니다.');
       }
 
-      // JSON 파싱
-      const translationsObj = JSON.parse(content);
+      console.log('[OpenAI] Raw response:', content.substring(0, 200));
+
+      // JSON 파싱 시도
+      let translationsObj: any;
+      try {
+        translationsObj = JSON.parse(content);
+      } catch (parseError) {
+        console.error('[OpenAI] JSON 파싱 실패. 응답 내용:', content);
+        throw new Error(`OpenAI 응답이 JSON 형식이 아닙니다. 응답: ${content.substring(0, 100)}...`);
+      }
 
       // PredictedTranslation 배열로 변환
       const translations: PredictedTranslation[] = [];
@@ -83,6 +92,9 @@ class OpenAIService {
         }
       }
 
+      // 글자수 내림차순 정렬 (searchService의 searchTranslations와 동일)
+      translations.sort((a, b) => b.value.length - a.value.length);
+      
       return translations;
     } catch (error) {
       console.error('OpenAI API 호출 실패:', error);

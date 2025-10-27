@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getTextWidth } from '../utils/textWidth';
+import { getLanguageTooltip } from '../utils/languageMetadata';
 
 interface PredictedTranslation {
   language: string;
@@ -16,6 +18,17 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
   onCopy,
   onClose,
 }) => {
+  const [sortedTranslations, setSortedTranslations] = useState<PredictedTranslation[]>([]);
+
+  useEffect(() => {
+    // 실제 텍스트 렌더링 너비로 정렬 (내림차순)
+    const sorted = [...translations].sort((a, b) => {
+      const widthA = getTextWidth(a.value);
+      const widthB = getTextWidth(b.value);
+      return widthB - widthA;
+    });
+    setSortedTranslations(sorted);
+  }, [translations]);
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between p-4 border-b border-figma-border">
@@ -32,13 +45,13 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
       </div>
 
       <div className="flex-1 flex flex-col p-4 min-h-0">
-        <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800 flex-shrink-0">
-          <div className="text-xs text-yellow-800 dark:text-yellow-200">
+        <div className="mb-4 p-3 bg-red-900 bg-opacity-50 rounded flex-shrink-0">
+          <div className="text-sm text-white dark:text-black">
             ⚠️ AI가 예측한 번역입니다. 실제 게임 데이터가 아닙니다.
           </div>
         </div>
 
-        {translations.length === 0 ? (
+        {sortedTranslations.length === 0 ? (
           <div className="text-figma-text-secondary text-sm">
             예상 번역을 찾을 수 없습니다.
           </div>
@@ -60,12 +73,15 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {translations.map((trans, idx) => (
+                  {sortedTranslations.map((trans, idx) => (
                     <tr
                       key={idx}
                       className="table-row border-b border-figma-border"
                     >
-                      <td className="p-3 text-figma-text-secondary">
+                      <td
+                        className="p-3 text-figma-text-secondary cursor-help"
+                        title={getLanguageTooltip(trans.language)}
+                      >
                         {trans.language.toUpperCase()}
                       </td>
                       <td className="p-3 text-figma-text-secondary">{trans.value}</td>
