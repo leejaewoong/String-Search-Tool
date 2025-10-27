@@ -21,9 +21,14 @@ export const DetailView: React.FC<DetailViewProps> = ({
   const [synonymsList, setSynonymsList] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'translations' | 'synonyms'>('translations');
   const [isLoadingSynonyms, setIsLoadingSynonyms] = useState(false);
+  const [hasTrackedTranslations, setHasTrackedTranslations] = useState(false);
+  const [hasTrackedSynonyms, setHasTrackedSynonyms] = useState(false);
 
+  // result 변경 시 번역 로드 및 플래그 초기화
   useEffect(() => {
     loadTranslations();
+    setHasTrackedTranslations(false);
+    setHasTrackedSynonyms(false);
   }, [result]);
 
   const loadTranslations = async () => {
@@ -55,17 +60,24 @@ export const DetailView: React.FC<DetailViewProps> = ({
     }
   };
 
-  // 유의어 탭 선택 시 또는 언어 변경 시 로드
+  // 번역 탭 선택 시 최초 1회만 로깅
   useEffect(() => {
-    if (activeTab === 'synonyms') {
+    if (activeTab === 'translations' && !hasTrackedTranslations) {
+      // Analytics: 번역 조회 이벤트 추적
+      window.electron.trackTranslationsView();
+      setHasTrackedTranslations(true);
+    }
+  }, [activeTab, hasTrackedTranslations]);
+
+  // 유의어 탭 선택 시 로드 및 최초 1회만 로깅
+  useEffect(() => {
+    if (activeTab === 'synonyms' && !hasTrackedSynonyms) {
       loadSynonyms();
       // Analytics: 유의어 조회 이벤트 추적
       window.electron.trackSynonymsView();
-    } else if (activeTab === 'translations') {
-      // Analytics: 번역 조회 이벤트 추적
-      window.electron.trackTranslationsView();
+      setHasTrackedSynonyms(true);
     }
-  }, [activeTab, selectedLanguage]);
+  }, [activeTab, selectedLanguage, hasTrackedSynonyms]);
 
   return (
     <div className="flex flex-col h-full">
