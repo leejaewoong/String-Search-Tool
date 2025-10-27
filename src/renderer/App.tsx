@@ -24,7 +24,6 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPredicted, setShowPredicted] = useState(false);
   const [predictedTranslations, setPredictedTranslations] = useState<Array<{language: string, value: string}>>([]);
-  const [aiMode, setAiMode] = useState(false);
 
   useEffect(() => {
     loadInitialData();
@@ -52,27 +51,6 @@ const App: React.FC = () => {
     setCurrentQuery(query);
     setHasSearched(true);
     setShowPredicted(false);
-
-    // AI 모드가 활성화된 경우 AI 예상 번역 실행
-    if (aiMode) {
-      setIsLoading(true);
-
-      // Analytics: AI 예상 번역 시도 이벤트 추적
-      await window.electron.trackPredictedTranslations();
-
-      try {
-        const translations = await window.electron.getPredictedTranslations(query);
-        setPredictedTranslations(translations);
-        setShowPredicted(true);
-      } catch (error) {
-        // Analytics: AI 예상 번역 실패 이벤트 추적
-        await window.electron.trackPredictedTranslationsFailed();
-        alert('AI 예상 번역을 가져오는데 실패했습니다.\n' + error);
-      } finally {
-        setIsLoading(false);
-      }
-      return;
-    }
 
     // 일반 검색
     const results = await window.electron.searchStrings(query, selectedLanguage);
@@ -191,10 +169,6 @@ const App: React.FC = () => {
     setShowPredicted(false);
   };
 
-  const handleAiModeToggle = () => {
-    setAiMode(!aiMode);
-  };
-
   return (
     <div className="flex flex-col h-screen bg-figma-bg text-figma-text">
       <Header
@@ -216,8 +190,6 @@ const App: React.FC = () => {
         onLanguageChange={handleLanguageChange}
         searchHistory={searchHistory}
         onHistorySelect={handleHistorySelect}
-        aiMode={aiMode}
-        onAiModeToggle={handleAiModeToggle}
       />
 
       <div className="flex-1 overflow-hidden">

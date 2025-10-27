@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Bot } from 'lucide-react';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -10,8 +9,6 @@ interface SearchBarProps {
   onLanguageChange: (lang: string) => void;
   searchHistory: string[];
   onHistorySelect: (query: string) => void;
-  aiMode: boolean;
-  onAiModeToggle: () => void;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
@@ -22,9 +19,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   languages,
   onLanguageChange,
   searchHistory,
-  onHistorySelect,
-  aiMode,
-  onAiModeToggle
+  onHistorySelect
 }) => {
   const [query, setQuery] = useState(initialQuery);
 
@@ -65,28 +60,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           </select>
         )}
       <div className="relative flex-1">
-        <button
-          onClick={onAiModeToggle}
-          disabled={disabled}
-          className={`absolute left-2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-7 rounded transition-colors ${
-            aiMode
-              ? 'text-blue-500 hover:text-blue-600'
-              : 'text-gray-400 hover:text-gray-500'
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
-          title={aiMode ? 'AI 비활성화' : 'AI 활성화'}
-        >
-          <Bot size={16} />
-          <span className="text-[10px] font-medium leading-none">
-            {aiMode ? 'ON' : 'OFF'}
-          </span>
-        </button>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="ID 또는 String을 입력하세요."
-          className="input-field pl-10 pr-10"
+          className="input-field pr-10"
           disabled={disabled}
         />
         {query && (
