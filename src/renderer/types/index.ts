@@ -24,6 +24,8 @@ export interface AnalyticsData {
     detailViewOpens: number;
     predictedTranslationsViews: number;
     predictedTranslationsFailed: number;
+    abbreviatedTranslationsViews: number;
+    abbreviatedTranslationsFailed: number;
   };
 }
 
@@ -47,6 +49,7 @@ export interface ElectronAPI {
   searchTranslations: (stringId: string) => Promise<SearchResult[]>;
   searchSynonyms: (stringId: string, targetLanguage: string) => Promise<SynonymSearchResult>;
   getPredictedTranslations: (query: string) => Promise<PredictedTranslation[]>;
+  getAbbreviatedTranslations: (originalEnglish: string, formalTranslations: PredictedTranslation[], languagesToAbbreviate: string[]) => Promise<PredictedTranslation[]>;
   trackSearch: (language: string) => Promise<boolean>;
   trackGitPull: () => Promise<boolean>;
   trackSynonymsView: () => Promise<boolean>;
@@ -54,6 +57,8 @@ export interface ElectronAPI {
   trackDetailViewOpen: () => Promise<boolean>;
   trackPredictedTranslations: () => Promise<boolean>;
   trackPredictedTranslationsFailed: () => Promise<boolean>;
+  trackAbbreviatedTranslations: () => Promise<boolean>;
+  trackAbbreviatedTranslationsFailed: () => Promise<boolean>;
   getAnalyticsData: () => Promise<AnalyticsData>;
 }
 
