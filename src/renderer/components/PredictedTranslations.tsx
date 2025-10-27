@@ -130,7 +130,7 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
                           언어
                         </th>
                         <th className="text-left p-3 font-medium">
-                          예상 번역(표준)
+                          예상 번역 (표준)
                         </th>
                         <th className="w-20 p-3 font-medium">
                           클립보드
@@ -187,7 +187,7 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
                           언어
                         </th>
                         <th className="text-left p-3 font-medium">
-                          예상 번역(축약)
+                          예상 번역 (축약)
                         </th>
                         <th className="w-20 p-3 font-medium">
                           클립보드
