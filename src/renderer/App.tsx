@@ -146,15 +146,18 @@ const App: React.FC = () => {
 
   const handleShowPredicted = async () => {
     setIsLoading(true);
+
+    // Analytics: AI 예상 번역 시도 이벤트 추적
+    await window.electron.trackPredictedTranslations();
+
     try {
       const translations = await window.electron.getPredictedTranslations(currentQuery);
       setPredictedTranslations(translations);
       setShowPredicted(true);
-
-      // Analytics: AI 예상 번역 조회 이벤트 추적
-      await window.electron.trackPredictedTranslations();
     } catch (error) {
-      alert('AI 예상 번역을 가져오는데 실패했습니다: ' + error);
+      // Analytics: AI 예상 번역 실패 이벤트 추적
+      await window.electron.trackPredictedTranslationsFailed();
+      alert('AI 예상 번역을 가져오는데 실패했습니다.\n' + error);
     } finally {
       setIsLoading(false);
     }
