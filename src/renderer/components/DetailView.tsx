@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SearchResult } from '../types';
 import { getTextWidth } from '../utils/textWidth';
+import { getLanguageTooltip } from '../utils/languageMetadata';
 
 interface DetailViewProps {
   result: SearchResult;
@@ -135,11 +136,14 @@ export const DetailView: React.FC<DetailViewProps> = ({
                     </thead>
                     <tbody>
                       {translations.map((trans, idx) => (
-                        <tr 
-                          key={idx} 
+                        <tr
+                          key={idx}
                           className="table-row border-b border-figma-border"
                         >
-                          <td className="p-3 text-figma-text-secondary">
+                          <td
+                            className="p-3 text-figma-text-secondary cursor-help"
+                            title={getLanguageTooltip(trans.filename)}
+                          >
                             {trans.filename.toUpperCase()}
                           </td>
                           <td className="p-3  text-figma-text-secondary">{trans.value}</td>
