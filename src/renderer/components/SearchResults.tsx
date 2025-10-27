@@ -18,30 +18,35 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   isSearchDisabled = false,
   onShowPredicted,
 }) => {
-  if (results.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full text-figma-text-secondary gap-4">
-        <div>
-          {isSearchDisabled
-            ? "먼저 우측 상단의 ⚙️을 통해 경로를 설정해주세요."
-            : hasSearched
-              ? '일치하는 String이 없습니다.'
-              : '안녕하세요, 저는 UX Design팀에서 만든 프로그램입니다 : )'}
-        </div>
-        {hasSearched && !isSearchDisabled && onShowPredicted && (
-          <button
-            onClick={onShowPredicted}
-            className="mt-5 px-4 py-2 bg-figma-primary text-white rounded hover:opacity-80 transition-opacity text-md font-medium"
-          >
-            AI 예상 번역 확인하기
-          </button>
-        )}
-      </div>
-    );
-  }
-
   return (
-    <div className="h-full p-4 flex flex-col">
+    <div className="h-full flex flex-col">
+      {hasSearched && (
+        <div className="flex items-center justify-between p-4 border-b border-figma-border">
+          <h2 className="text-base font-semibold">검색 결과 ({results.length}개)</h2>
+          {onShowPredicted && (
+            <button
+              onClick={onShowPredicted}
+              className="btn-secondary flex items-center gap-1"
+            >
+              <img src="openai.svg" alt="OpenAI" className="w-4 h-4 justify-center" />
+              AI 번역
+            </button>
+          )}
+        </div>
+      )}
+
+      {results.length === 0 ? (
+        <div className="flex flex-col items-center justify-center flex-1 text-figma-text-secondary gap-4">
+          <div>
+            {isSearchDisabled
+              ? "먼저 우측 상단의 ⚙️을 통해 경로를 설정해주세요."
+              : hasSearched
+                ? '일치하는 String이 없습니다.'
+                : '안녕하세요, 저는 UX Design팀에서 만든 프로그램입니다 : )'}
+          </div>
+        </div>
+      ) : (
+      <div className="flex-1 p-4 flex flex-col min-h-0">
       <div className="border border-figma-border rounded overflow-hidden flex-1 flex flex-col">
         <div className="overflow-auto flex-1">
           <table className="w-full text-sm">
@@ -87,6 +92,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
           </table>
         </div>
       </div>
+      </div>
+      )}
     </div>
   );
 };
