@@ -185,6 +185,16 @@ function registerIpcHandlers() {
     return true;
   });
 
+  ipcMain.handle('track-abbreviated-translations', async () => {
+    analyticsService.trackAbbreviatedTranslations();
+    return true;
+  });
+
+  ipcMain.handle('track-abbreviated-translations-failed', async () => {
+    analyticsService.trackAbbreviatedTranslationsFailed();
+    return true;
+  });
+
   ipcMain.handle('get-analytics-data', async () => {
     return analyticsService.getAnalyticsData();
   });

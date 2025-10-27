@@ -20,6 +20,8 @@ interface AnalyticsData {
     detailViewOpens: number;
     predictedTranslationsViews: number;
     predictedTranslationsFailed: number;
+    abbreviatedTranslationsViews: number;
+    abbreviatedTranslationsFailed: number;
   };
 }
 
@@ -46,6 +48,8 @@ class AnalyticsService {
           detailViewOpens: 0,
           predictedTranslationsViews: 0,
           predictedTranslationsFailed: 0,
+          abbreviatedTranslationsViews: 0,
+          abbreviatedTranslationsFailed: 0,
         },
       },
     });
@@ -241,6 +245,36 @@ class AnalyticsService {
     this.store.set('features', features);
 
     console.log('[Analytics] Predicted translations failed tracked:', features.predictedTranslationsFailed);
+  }
+
+  /**
+   * AI 축약 번역 조회 이벤트 추적
+   */
+  trackAbbreviatedTranslations(): void {
+    // GA4 즉시 전송
+    this.sendGA4Event('abbreviated_translations_view', {});
+
+    // 로컬 카운터 증가
+    const features = this.store.get('features');
+    features.abbreviatedTranslationsViews = (features.abbreviatedTranslationsViews || 0) + 1;
+    this.store.set('features', features);
+
+    console.log('[Analytics] Abbreviated translations view tracked:', features.abbreviatedTranslationsViews);
+  }
+
+  /**
+   * AI 축약 번역 실패 이벤트 추적
+   */
+  trackAbbreviatedTranslationsFailed(): void {
+    // GA4 즉시 전송
+    this.sendGA4Event('abbreviated_translations_failed', {});
+
+    // 로컬 카운터 증가
+    const features = this.store.get('features');
+    features.abbreviatedTranslationsFailed = (features.abbreviatedTranslationsFailed || 0) + 1;
+    this.store.set('features', features);
+
+    console.log('[Analytics] Abbreviated translations failed tracked:', features.abbreviatedTranslationsFailed);
   }
 
   /**

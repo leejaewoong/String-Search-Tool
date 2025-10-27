@@ -68,6 +68,12 @@ contextBridge.exposeInMainWorld('electron', {
   trackPredictedTranslationsFailed: () =>
     ipcRenderer.invoke('track-predicted-translations-failed'),
 
+  trackAbbreviatedTranslations: () =>
+    ipcRenderer.invoke('track-abbreviated-translations'),
+
+  trackAbbreviatedTranslationsFailed: () =>
+    ipcRenderer.invoke('track-abbreviated-translations-failed'),
+
   getAnalyticsData: () =>
     ipcRenderer.invoke('get-analytics-data'),
 });

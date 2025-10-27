@@ -53,6 +53,8 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
     } catch (error) {
       console.error('축약 번역 로드 실패:', error);
       setAbbreviatedTranslations([]);
+      // Analytics: 축약 번역 실패 이벤트 추적
+      window.electron.trackAbbreviatedTranslationsFailed();
     } finally {
       setIsLoadingAbbreviated(false);
     }
@@ -62,6 +64,8 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
   useEffect(() => {
     if (activeTab === 'abbreviated' && abbreviatedTranslations.length === 0) {
       loadAbbreviatedTranslations();
+      // Analytics: 축약 번역 조회 이벤트 추적
+      window.electron.trackAbbreviatedTranslations();
     }
   }, [activeTab]);
 
