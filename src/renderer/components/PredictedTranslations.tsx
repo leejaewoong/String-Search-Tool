@@ -92,7 +92,7 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
               onChange={() => setActiveTab('formal')}
               className="accent-figma-primary"
             />
-            <span className="text-sm">정식 번역</span>
+            <span className="text-sm">표준 번역</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -130,7 +130,7 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
                           언어
                         </th>
                         <th className="text-left p-3 font-medium">
-                          예상 번역
+                          예상 번역 (표준)
                         </th>
                         <th className="w-20 p-3 font-medium">
                           클립보드
@@ -187,7 +187,7 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
                           언어
                         </th>
                         <th className="text-left p-3 font-medium">
-                          축약 번역
+                          예상 번역 (축약)
                         </th>
                         <th className="w-20 p-3 font-medium">
                           클립보드

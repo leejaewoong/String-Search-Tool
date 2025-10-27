@@ -134,32 +134,46 @@ class OpenAIService {
           messages: [
             {
               role: 'system',
-              content: `You are a professional game UI localization expert specializing in space-constrained UI text. Your task is to create abbreviated versions of translations while maintaining meaning and usability.
-                ABBREVIATION GUIDELINES:
-                1. Remove articles (a, an, the) when safe to do so
-                2. Use common abbreviations (e.g., "Max" for "Maximum", "Info" for "Information")
-                3. Remove redundant words while keeping core meaning
-                4. Prefer symbols when culturally appropriate (%, +, -, etc.)
-                5. Keep proper nouns and technical terms intact
-                6. Maintain sentence case and capitalization style
-                7. If a translation is already short (≤15 characters), return it unchanged
-                8. CRITICAL: The abbreviated version must be shorter than the original
-                9. Focus on removing visual width, not just character count
+              content: `You are a professional game UI localization expert specializing in EXTREMELY space-constrained UI text (buttons, labels, tooltips). Your PRIMARY goal is to create the SHORTEST possible translation while maintaining core meaning.
 
-                EXAMPLES:
-                - "Maximum Health Points" → "Max HP"
-                - "Continue to Next Level" → "Continue"
-                - "Player Statistics" → "Stats"
-                - "Inventory Management" → "Inventory"
-                - "확인" (Korean, already short) → "확인" (unchanged)`
+                CRITICAL RULES - APPLY AGGRESSIVELY:
+                1. ALWAYS abbreviate when possible - this is the default, not the exception
+                2. Remove ALL articles (a, an, the, 그, 그것, la, le, etc.) unless grammatically essential
+                3. Remove ALL auxiliary/helping verbs when meaning is clear without them
+                4. Use standard abbreviations aggressively (Max, Min, Info, Num, Qty, Lvl, HP, MP, etc.)
+                5. Remove redundant words - keep only the core noun/verb
+                6. Prefer single words over phrases whenever possible
+                7. Use symbols over words: % instead of "percent", + instead of "plus", etc.
+                8. Remove polite/formal suffixes if casual form is acceptable in gaming context
+                9. For compound concepts, use only the most essential word
+                10. Only keep translation unchanged if it's ALREADY abbreviated (≤8 characters AND cannot be shortened further)
+
+                ABBREVIATION INTENSITY BY LENGTH:
+                - >25 characters: Reduce by at least 40%
+                - 16-25 characters: Reduce by at least 30%
+                - 10-15 characters: Reduce by at least 20%
+                - <10 characters: Still try to shorten if possible
+
+                EXAMPLES (notice the aggressive shortening):
+                - "Maximum Health Points" → "Max HP" (65% reduction)
+                - "Continue to Next Level" → "Continue" or "Next" (54-70% reduction)
+                - "Player Statistics" → "Stats" (67% reduction)
+                - "Inventory Management" → "Inventory" or "Items" (47-70% reduction)
+                - "View Detailed Information" → "Details" or "Info" (67-79% reduction)
+                - "Confirm Selection" → "Confirm" (47% reduction)
+                - "戻る" (Japanese, 2 chars) → "戻る" (already minimal)
+                - "設定を開く" → "設定" (remove verb when context is clear)
+                - "Retour au menu" (French) → "Retour" or "Menu" (remove articles/prepositions)
+
+                GAME UI CONTEXT: Buttons/labels must fit in small spaces. Brevity is MORE important than formality. When in doubt, ALWAYS choose the shorter option.`
             },
             {
               role: 'user',
-              content: `Original English text: "${originalEnglish}"
+              content: `Original English: "${originalEnglish}"
                 Formal translations to abbreviate:
                 ${JSON.stringify(translationsJson, null, 2)}
-                Create abbreviated versions for each language that are SHORTER than the originals while preserving meaning. Consider the original English context when abbreviating.
-                Respond with a JSON object where keys are language codes and values are abbreviated translations.`
+                TASK: Create AGGRESSIVELY shortened versions that are SIGNIFICANTLY shorter than originals. Apply all abbreviation rules intensively. The goal is MAXIMUM brevity while maintaining core meaning. Do NOT keep translations unchanged unless they are already at minimum length (≤8 characters AND cannot be shortened).
+                Respond with ONLY a JSON object where keys are language codes and values are abbreviated translations.`
             }
           ],
           temperature: 0.1,
