@@ -43,6 +43,9 @@ contextBridge.exposeInMainWorld('electron', {
   getPredictedTranslations: (query: string) =>
     ipcRenderer.invoke('get-predicted-translations', query),
 
+  getAbbreviatedTranslations: (originalEnglish: string, formalTranslations: any[], languagesToAbbreviate: string[]) =>
+    ipcRenderer.invoke('get-abbreviated-translations', originalEnglish, formalTranslations, languagesToAbbreviate),
+
   // Analytics
   trackSearch: (language: string) =>
     ipcRenderer.invoke('track-search', language),

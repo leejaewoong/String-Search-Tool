@@ -75,6 +75,11 @@ function registerIpcHandlers() {
     return openaiService.getPredictedTranslations(query);
   });
 
+  // AI 축약 번역
+  ipcMain.handle('get-abbreviated-translations', async (_event, originalEnglish, formalTranslations, languagesToAbbreviate) => {
+    return openaiService.getAbbreviatedTranslations(originalEnglish, formalTranslations, languagesToAbbreviate);
+  });
+
   // 언어 목록
   ipcMain.handle('get-languages', async () => {
     return fileService.getLanguages();

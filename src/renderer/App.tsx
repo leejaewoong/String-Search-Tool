@@ -200,6 +200,7 @@ const App: React.FC = () => {
           />
         ) : showPredicted ? (
           <PredictedTranslations
+            originalEnglish={currentQuery}
             translations={predictedTranslations}
             onCopy={handleCopy}
             onClose={handleClosePredicted}
