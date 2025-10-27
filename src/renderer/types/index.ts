@@ -22,6 +22,8 @@ export interface AnalyticsData {
     synonymsViews: number;
     translationsViews: number;
     detailViewOpens: number;
+    predictedTranslationsViews: number;
+    predictedTranslationsFailed: number;
   };
 }
 
@@ -51,6 +53,7 @@ export interface ElectronAPI {
   trackTranslationsView: () => Promise<boolean>;
   trackDetailViewOpen: () => Promise<boolean>;
   trackPredictedTranslations: () => Promise<boolean>;
+  trackPredictedTranslationsFailed: () => Promise<boolean>;
   getAnalyticsData: () => Promise<AnalyticsData>;
 }
 

@@ -19,6 +19,7 @@ interface AnalyticsData {
     translationsViews: number;
     detailViewOpens: number;
     predictedTranslationsViews: number;
+    predictedTranslationsFailed: number;
   };
 }
 
@@ -44,6 +45,7 @@ class AnalyticsService {
           translationsViews: 0,
           detailViewOpens: 0,
           predictedTranslationsViews: 0,
+          predictedTranslationsFailed: 0,
         },
       },
     });
@@ -224,6 +226,21 @@ class AnalyticsService {
     this.store.set('features', features);
 
     console.log('[Analytics] Predicted translations view tracked:', features.predictedTranslationsViews);
+  }
+
+  /**
+   * AI 예상 번역 실패 이벤트 추적
+   */
+  trackPredictedTranslationsFailed(): void {
+    // GA4 즉시 전송
+    this.sendGA4Event('predicted_translations_failed', {});
+
+    // 로컬 카운터 증가
+    const features = this.store.get('features');
+    features.predictedTranslationsFailed = (features.predictedTranslationsFailed || 0) + 1;
+    this.store.set('features', features);
+
+    console.log('[Analytics] Predicted translations failed tracked:', features.predictedTranslationsFailed);
   }
 
   /**

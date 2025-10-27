@@ -175,6 +175,11 @@ function registerIpcHandlers() {
     return true;
   });
 
+  ipcMain.handle('track-predicted-translations-failed', async () => {
+    analyticsService.trackPredictedTranslationsFailed();
+    return true;
+  });
+
   ipcMain.handle('get-analytics-data', async () => {
     return analyticsService.getAnalyticsData();
   });
