@@ -38,6 +38,17 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
   }
+
+  // F12 키로 개발자 도구 토글
+  mainWindow.webContents.on('before-input-event', (_event, input) => {
+    if (input.key === 'F12') {
+      if (mainWindow?.webContents.isDevToolsOpened()) {
+        mainWindow.webContents.closeDevTools();
+      } else {
+        mainWindow?.webContents.openDevTools();
+      }
+    }
+  });
 }
 
 app.whenReady().then(() => {
