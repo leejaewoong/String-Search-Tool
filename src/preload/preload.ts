@@ -76,4 +76,7 @@ contextBridge.exposeInMainWorld('electron', {
 
   getAnalyticsData: () =>
     ipcRenderer.invoke('get-analytics-data'),
+
+  getAppVersion: () =>
+    ipcRenderer.invoke('get-app-version'),
 });

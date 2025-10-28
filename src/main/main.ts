@@ -198,4 +198,9 @@ function registerIpcHandlers() {
   ipcMain.handle('get-analytics-data', async () => {
     return analyticsService.getAnalyticsData();
   });
+
+  // 앱 버전 가져오기
+  ipcMain.handle('get-app-version', async () => {
+    return app.getVersion();
+  });
 }

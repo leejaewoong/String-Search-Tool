@@ -60,6 +60,7 @@ export interface ElectronAPI {
   trackAbbreviatedTranslations: () => Promise<boolean>;
   trackAbbreviatedTranslationsFailed: () => Promise<boolean>;
   getAnalyticsData: () => Promise<AnalyticsData>;
+  getAppVersion: () => Promise<string>;
 }
 
 declare global {
