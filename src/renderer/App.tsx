@@ -84,16 +84,20 @@ const App: React.FC = () => {
     setIsLoading(true);
     try {
       await window.electron.gitPull();
+
+      // 업데이트 시간 갱신
       const updateTime = await window.electron.getLastUpdateTime();
       setLastUpdateTime(updateTime);
 
+      // 언어 목록 갱신
       const langs = await window.electron.getLanguages();
       setLanguages(langs);
 
+      console.log('[Git Pull Debug] langs:', langs);
+      console.log('[Git Pull Debug] langs.length:', langs.length);      
+
       // Analytics: Git Pull 이벤트 추적
       await window.electron.trackGitPull();
-
-      alert('업데이트 완료');
     } catch (error) {
       const errorMessage = String(error);
       if (errorMessage.includes('경로가 설정되지 않았습니다')) {
