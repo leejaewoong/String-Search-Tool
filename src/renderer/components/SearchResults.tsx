@@ -68,7 +68,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                 <tr
                   key={idx}
                   className="table-row border-b border-figma-border"
-                  onDoubleClick={() => onRowClick(result)}
+                  onClick={() => onRowClick(result)}
                 >
                   <td className="p-3 text-figma-text-secondary">
                     {result.id}
