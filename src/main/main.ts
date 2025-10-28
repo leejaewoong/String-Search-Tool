@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import { app, BrowserWindow, ipcMain, dialog, clipboard } from 'electron';
 import * as path from 'path';
 import Store from 'electron-store';
@@ -7,6 +7,15 @@ import { searchService } from './searchService';
 import { gitService } from './gitService';
 import { analyticsService } from './analyticsService';
 import { openaiService } from './openaiService';
+
+// .env 파일 로드 (개발/프로덕션 모두 지원)
+const envPath = app.isPackaged
+  ? path.join(process.resourcesPath, '.env')  // 프로덕션: 앱 리소스 폴더
+  : path.join(__dirname, '../../.env');       // 개발: 프로젝트 루트
+
+dotenv.config({ path: envPath });
+console.log('[Main] .env loaded from:', envPath);
+console.log('[Main] OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
 
 const store = new Store();
 let mainWindow: BrowserWindow | null = null;

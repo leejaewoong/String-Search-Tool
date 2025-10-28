@@ -13,6 +13,13 @@
     "build/**/*",
     "package.json"
   ],
+  "extraResources": [
+    {
+      "from": ".env",
+      "to": ".env",
+      "filter": ["**/*"]
+    }
+  ],
   "win": {
     "target": [
       {

@@ -1,8 +1,3 @@
-import * as dotenv from 'dotenv';
-
-// .env 파일 로드
-dotenv.config();
-
 interface PredictedTranslation {
   language: string;
   value: string;
@@ -16,19 +11,27 @@ const SUPPORTED_LANGUAGES = [
 ];
 
 class OpenAIService {
-  private apiKey: string | undefined;
   private model: string;
 
   constructor() {
-    this.apiKey = process.env.OPENAI_API_KEY;    
     this.model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+    console.log('[OpenAI] Constructor called');
+    console.log('[OpenAI] API Key exists:', !!process.env.OPENAI_API_KEY);
     console.log('[OpenAI] Using model:', this.model);
   }
 
-  async getPredictedTranslations(text: string): Promise<PredictedTranslation[]> {
-    if (!this.apiKey) {
+  private getApiKey(): string {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      console.error('[OpenAI] API Key not found in process.env');
+      console.error('[OpenAI] Available env vars:', Object.keys(process.env).filter(k => k.includes('OPENAI')));
       throw new Error('OpenAI API 키가 설정되지 않았습니다.');
     }
+    return apiKey;
+  }
+
+  async getPredictedTranslations(text: string): Promise<PredictedTranslation[]> {
+    const apiKey = this.getApiKey();
 
     try {
       // 언어 코드 목록 생성
@@ -38,7 +41,7 @@ class OpenAIService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           model: this.model,
@@ -107,9 +110,7 @@ class OpenAIService {
     formalTranslations: PredictedTranslation[],
     languagesToAbbreviate: string[]
   ): Promise<PredictedTranslation[]> {
-    if (!this.apiKey) {
-      throw new Error('OpenAI API 키가 설정되지 않았습니다.');
-    }
+    const apiKey = this.getApiKey();
 
     try {
       // 축약이 필요한 언어들의 정식 번역만 추출
@@ -127,7 +128,7 @@ class OpenAIService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           model: this.model,
