@@ -42,7 +42,7 @@
   }
 
   .dropdown {
-    @apply bg-figma-surface border border-figma-border text-figma-text px-3 py-2 rounded text-sm focus:border-figma-primary transition-colors cursor-pointer;
+    @apply bg-figma-surface border border-figma-border text-figma-text px-3 py-2 rounded text-sm focus:border-figma-primary transition-colors cursor-pointer w-20;
   }
 
   .table-row {

@@ -46,19 +46,22 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   return (
     <div className="border-b border-figma-border">
       <div className="flex gap-2 p-4">
-        {languages.length > 0 && (
-          <select
-            value={selectedLanguage}
-            onChange={(e) => onLanguageChange(e.target.value)}
-            className="dropdown"
-          >
-            {languages.map((lang) => (
+        <select
+          value={selectedLanguage}
+          onChange={(e) => onLanguageChange(e.target.value)}
+          className="dropdown"
+          disabled={disabled || languages.length === 0}
+        >
+          {languages.length > 0 ? (
+            languages.map((lang) => (
               <option key={lang} value={lang}>
                 {lang.toUpperCase()}
               </option>
-            ))}
-          </select>
-        )}
+            ))
+          ) : (
+            <option value="ko">KO</option>
+          )}
+        </select>
       <div className="relative flex-1">
         <input
           type="text"
@@ -86,9 +89,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           검색
         </button>
       </div>
-      {searchHistory.length > 0 && (
-        <div className="px-4 pb-3 flex items-center gap-2 overflow-x-auto">
-          <span className="text-xs text-figma-text-secondary whitespace-nowrap">최근 검색:</span>
+      <div className="px-4 pb-3 flex items-center gap-2 overflow-x-auto">
+        <span className="text-xs text-figma-text-secondary whitespace-nowrap">최근 검색:</span>
+        {!disabled && searchHistory.length > 0 && (
           <div className="flex gap-2 overflow-x-auto">
             {searchHistory.map((historyQuery, idx) => (
               <button
@@ -100,8 +103,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
               </button>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
