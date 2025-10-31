@@ -185,13 +185,8 @@ function registerIpcHandlers() {
     return true;
   });
 
-  ipcMain.handle('track-translations-view', async () => {
-    analyticsService.trackTranslationsView();
-    return true;
-  });
-
-  ipcMain.handle('track-detail-view-open', async () => {
-    analyticsService.trackDetailViewOpen();
+  ipcMain.handle('track-translations-view', async (_event, source: 'gdd' | 'synonym') => {
+    analyticsService.trackTranslationsView(source);
     return true;
   });
 

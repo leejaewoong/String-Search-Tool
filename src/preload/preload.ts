@@ -56,11 +56,8 @@ contextBridge.exposeInMainWorld('electron', {
   trackSynonymsView: () =>
     ipcRenderer.invoke('track-synonyms-view'),
 
-  trackTranslationsView: () =>
-    ipcRenderer.invoke('track-translations-view'),
-
-  trackDetailViewOpen: () =>
-    ipcRenderer.invoke('track-detail-view-open'),
+  trackTranslationsView: (source: 'gdd' | 'synonym') =>
+    ipcRenderer.invoke('track-translations-view', source),
 
   trackPredictedTranslations: () =>
     ipcRenderer.invoke('track-predicted-translations'),

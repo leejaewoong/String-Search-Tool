@@ -56,4 +56,12 @@
   .modal-content {
     @apply bg-figma-surface border border-figma-border rounded-lg p-6 w-full max-w-lg;
   }
+
+  /* Thin horizontal scrollbar (2px height) for selected areas */
+  .scrollbar-thin-x::-webkit-scrollbar {
+    height: 8px;
+  }
+  .scrollbar-thin-x {
+    scrollbar-width: thin; /* Firefox */
+  }
 }

@@ -1,37 +1,50 @@
 import React from 'react';
 import { SearchResult } from '../types';
+import { SearchMode } from './SearchBar';
 
 interface SearchResultsProps {
   results: SearchResult[];
+  synonymsList?: string[];
   onRowClick: (result: SearchResult) => void;
   onCopy: (text: string) => void;
   hasSearched?: boolean;
   isSearchDisabled?: boolean;
-  onShowPredicted?: () => void;
+  searchMode: SearchMode;
 }
 
 export const SearchResults: React.FC<SearchResultsProps> = ({
   results,
+  synonymsList,
   onRowClick,
   onCopy,
   hasSearched = false,
   isSearchDisabled = false,
-  onShowPredicted,
+  searchMode,
 }) => {
+  
   return (
     <div className="h-full flex flex-col">
       {hasSearched && (
-        <div className="flex items-center justify-between p-4 border-b border-figma-border">
-          <h2 className="text-base font-semibold">검색 결과 ({results.length}개)</h2>
-          {onShowPredicted && (
-            <button
-              onClick={onShowPredicted}
-              className="btn-secondary flex items-center gap-1"
-            >
-              <img src="openai.svg" alt="OpenAI" className="w-4 h-4 justify-center" />
-              AI 번역
-            </button>
-          )}
+        <div className="flex items-center justify-between p-4 border-b border-figma-border h-20">
+          <h2 className="text-base font-semibold px-1">검색 결과 ({results.length}개)</h2>
+        </div>
+      )}
+
+      {searchMode === 'synonym' && synonymsList && synonymsList.length > 0 && (
+        <div className="p-4">
+          <div className="text-xs text-figma-text-secondary mb-2">
+            유의어 ({synonymsList.length}개)
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {synonymsList.map((syn, idx) => (
+              <span
+                key={idx}
+                className="px-2 py-1 bg-figma-bg text-xs rounded border border-figma-border text-figma-text-secondary"
+              >
+                {syn}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
@@ -41,58 +54,54 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             {isSearchDisabled
               ? "먼저 우측 상단의 ⚙️을 통해 경로를 설정해주세요."
               : hasSearched
-                ? '일치하는 String이 없습니다.'
+                ? (searchMode === 'synonym'
+                    ? (synonymsList && synonymsList.length > 0
+                        ? '유의어 검색 결과가 없습니다.'
+                        : '유의어를 찾을 수 없습니다.')
+                    : '일치하는 String이 없습니다.')
                 : '안녕하세요, 저는 UX Design팀에서 만든 프로그램입니다 : )'}
           </div>
         </div>
       ) : (
-      <div className="flex-1 p-4 flex flex-col min-h-0">
-      <div className="border border-figma-border rounded overflow-hidden flex-1 flex flex-col">
-        <div className="overflow-auto flex-1">
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-figma-bg border-b border-figma-border z-10">
-              <tr>
-                <th className="w-96 text-left p-3 font-medium">
-                  String ID
-                </th>
-                <th className="text-left p-3 font-medium">
-                  String
-                </th>
-                <th className="w-20 p-3 font-medium">
-                  클립보드
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((result, idx) => (
-                <tr
-                  key={idx}
-                  className="table-row border-b border-figma-border"
-                  onClick={() => onRowClick(result)}
-                >
-                  <td className="p-3 text-figma-text-secondary">
-                    {result.id}
-                  </td>
-                  <td className="p-3 text-figma-text-secondary">{result.value}</td>
-                  <td className="pl-6">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onCopy(result.value);
-                      }}
-                      className="btn-icon text-xs"
-                      title="클립보드에 복사"
+        <div className="flex-1 p-4 flex flex-col min-h-0">
+          <div className="border border-figma-border rounded overflow-hidden flex-1 flex flex-col">
+            <div className="overflow-auto flex-1">
+              <table className="w-full text-sm">
+                <thead className="sticky top-0 border-b border-figma-border bg-figma-bg z-10">
+                  <tr>
+                    <th className="w-96 text-left p-3 font-medium">String ID</th>
+                    <th className="text-left p-3 font-medium">String</th>
+                    <th className="w-20 p-3 font-medium">클립보드</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {results.map((result, idx) => (
+                    <tr
+                      key={idx}
+                      onClick={() => onRowClick(result)}
+                      className="table-row cursor-pointer border-b border-figma-border"
                     >
-                      📋
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      <td className="p-3 text-figma-text-secondary">{result.id}</td>
+                      <td className="p-3 text-figma-text-secondary">{result.value}</td>
+                      <td className="pl-6">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onCopy(result.value);
+                          }}
+                          className="btn-icon text-xs"
+                          title="클립보드에 복사"
+                        >
+                          📋
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      </div>
-      </div>
       )}
     </div>
   );

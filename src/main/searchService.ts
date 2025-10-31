@@ -9,6 +9,8 @@ interface SearchResult {
   distance?: number;
   matchType?: 'direct' | 'synonym'; // 직접 매칭 vs 유의어 매칭
   synonymSource?: string; // 유의어인 경우 원본 영어 단어
+  isInputFolder?: boolean; // input 폴더 결과 여부
+  priority?: number; // 검색 우선순위 (낮을수록 우선)
 }
 
 interface SynonymSearchResult {
@@ -46,22 +48,59 @@ class SearchService {
   }
 
   search(query: string, language: string): SearchResult[] {
+    const lowerQuery = query.toLowerCase();
+
+    // 병렬 처리: ui_XX.json과 input 폴더 동시 검색
+    const uiResults = this.searchUIFile(query, language, lowerQuery);
+    const inputResults = this.searchInputFolder(query, language, lowerQuery);
+
+    // 중복 제거: ui_XX.json에 있는 String ID는 input 폴더 결과 제외
+    const uiStringIds = new Set(uiResults.map(r => r.id));
+    const filteredInputResults = inputResults.filter(r => !uiStringIds.has(r.id));
+
+    // 결과 병합 및 정렬
+    const allResults = [...uiResults, ...filteredInputResults];
+
+    // 1차: 우선순위 정렬 (낮을수록 우선)
+    // 2차: 레벤슈타인 거리 정렬 (작을수록 유사)
+    allResults.sort((a, b) => {
+      if ((a.priority || 999) !== (b.priority || 999)) {
+        return (a.priority || 999) - (b.priority || 999);
+      }
+      return (a.distance || 0) - (b.distance || 0);
+    });
+
+    return allResults;
+  }
+
+  private searchUIFile(query: string, language: string, lowerQuery: string): SearchResult[] {
     const fileData = fileService.getFileData(language);
     if (!fileData) {
       return [];
     }
 
-    const lowerQuery = query.toLowerCase();
     const results: SearchResult[] = [];
 
     for (const [id, value] of Object.entries(fileData)) {
       const lowerValue = value.toLowerCase();
       const lowerId = id.toLowerCase();
 
-      const matchesId = lowerId.includes(lowerQuery);
-      const matchesValue = lowerValue.includes(lowerQuery);
+      let priority: number | undefined;
 
-      if (matchesId || matchesValue) {
+      // 우선순위 1: String ID 완전 일치
+      if (lowerId === lowerQuery) {
+        priority = 1;
+      }
+      // 우선순위 2: Value 부분 일치
+      else if (lowerValue.includes(lowerQuery)) {
+        priority = 2;
+      }
+      // 우선순위 3: String ID 부분 일치
+      else if (lowerId.includes(lowerQuery)) {
+        priority = 3;
+      }
+
+      if (priority !== undefined) {
         const distance = this.levenshteinDistance(lowerQuery, lowerValue);
         results.push({
           id,
@@ -69,14 +108,58 @@ class SearchService {
           filename: `ui_${language}.json`,
           length: value.length,
           distance,
+          priority,
         });
       }
     }
 
-    // 정렬: 레벤슈타인 거리 오름차순 (차이가 적은 순)
-    results.sort((a, b) => {
-      return (a.distance || 0) - (b.distance || 0);
-    });
+    return results;
+  }
+
+  private searchInputFolder(query: string, language: string, lowerQuery: string): SearchResult[] {
+    const inputFiles = fileService.getInputFiles();
+    const results: SearchResult[] = [];
+
+    for (const [filename, data] of inputFiles.entries()) {
+      for (const [stringId, obj] of Object.entries(data)) {
+        const lowerId = stringId.toLowerCase();
+        const lowerText = obj.Text.toLowerCase();
+
+        let shouldAdd = false;
+        let priority: number | undefined;
+
+        // 우선순위 1: String ID 완전 일치 (모든 언어)
+        if (lowerId === lowerQuery) {
+          shouldAdd = true;
+          priority = 1;
+        }
+        // 우선순위 2: Text 부분 일치 (en일 때만)
+        else if (lowerText.includes(lowerQuery)) {
+          if (language === 'en') {
+            shouldAdd = true;
+            priority = 2;
+          }
+        }
+        // 우선순위 3: String ID 부분 일치 (모든 언어)
+        else if (lowerId.includes(lowerQuery)) {
+          shouldAdd = true;
+          priority = 3;
+        }
+
+        if (shouldAdd) {
+          const distance = this.levenshteinDistance(lowerQuery, lowerText);
+          results.push({
+            id: stringId,
+            value: obj.Text,
+            filename: `input/${filename}`,
+            length: obj.Text.length,
+            distance,
+            priority,
+            isInputFolder: true,
+          });
+        }
+      }
+    }
 
     return results;
   }

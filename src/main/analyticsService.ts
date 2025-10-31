@@ -17,7 +17,6 @@ interface AnalyticsData {
   features: {
     synonymsViews: number;
     translationsViews: number;
-    detailViewOpens: number;
     predictedTranslationsViews: number;
     predictedTranslationsFailed: number;
     abbreviatedTranslationsViews: number;
@@ -45,7 +44,6 @@ class AnalyticsService {
         features: {
           synonymsViews: 0,
           translationsViews: 0,
-          detailViewOpens: 0,
           predictedTranslationsViews: 0,
           predictedTranslationsFailed: 0,
           abbreviatedTranslationsViews: 0,
@@ -189,32 +187,18 @@ class AnalyticsService {
 
   /**
    * 번역 조회 이벤트 추적
+   * @param source - 진입 경로: 'gdd' 또는 'synonym'
    */
-  trackTranslationsView(): void {
+  trackTranslationsView(source: 'gdd' | 'synonym'): void {
     // GA4 즉시 전송
-    this.sendGA4Event('translations_view', {});
+    this.sendGA4Event('translations_view', { source });
 
     // 로컬 카운터 증가
     const features = this.store.get('features');
     features.translationsViews += 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Translations view tracked:', features.translationsViews);
-  }
-
-  /**
-   * 상세 뷰 열기 이벤트 추적
-   */
-  trackDetailViewOpen(): void {
-    // GA4 즉시 전송
-    this.sendGA4Event('detail_view_open', {});
-
-    // 로컬 카운터 증가
-    const features = this.store.get('features');
-    features.detailViewOpens += 1;
-    this.store.set('features', features);
-
-    console.log('[Analytics] Detail view open tracked:', features.detailViewOpens);
+    console.log('[Analytics] Translations view tracked from', source, ':', features.translationsViews);
   }
 
   /**
