@@ -31,7 +31,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
       )}
 
       {searchMode === 'synonym' && synonymsList && synonymsList.length > 0 && (
-        <div className="p-4 border-b border-figma-border">
+        <div className="p-4">
           <div className="text-xs text-figma-text-secondary mb-2">
             유의어 ({synonymsList.length}개)
           </div>

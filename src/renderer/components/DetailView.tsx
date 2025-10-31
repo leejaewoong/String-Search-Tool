@@ -58,7 +58,7 @@ export const DetailView: React.FC<DetailViewProps> = ({
         </div>
 
         {translations.length === 0 ? (
-          <div className="text-figma-text-secondary text-sm">
+          <div className="flex flex-col items-center justify-center flex-1 text-figma-text-secondary gap-4">
             번역을 찾을 수 없습니다.
           </div>
         ) : (

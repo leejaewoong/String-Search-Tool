@@ -146,10 +146,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           검색
         </button>
       </div>
-      <div className="px-4 pb-3 flex items-center gap-2 overflow-x-auto">
+      <div className="px-4 pb-3 flex items-center gap-2 overflow-x-auto scrollbar-thin-x ">
         <span className="text-xs text-figma-text-secondary whitespace-nowrap">최근 검색:</span>
         {!disabled && searchHistory.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto">
+          <div className="flex gap-2 py-2 overflow-x-auto scrollbar-thin-x">
             {searchHistory.map((historyQuery, idx) => (
               <button
                 key={idx}
