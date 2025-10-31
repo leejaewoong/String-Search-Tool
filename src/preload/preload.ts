@@ -37,8 +37,8 @@ contextBridge.exposeInMainWorld('electron', {
   searchTranslations: (stringId: string) =>
     ipcRenderer.invoke('search-translations', stringId),
 
-  searchSynonyms: (stringId: string, targetLanguage: string) =>
-    ipcRenderer.invoke('search-synonyms', stringId, targetLanguage),
+  searchSynonyms: (searchQuery: string, targetLanguage: string) =>
+    ipcRenderer.invoke('search-synonyms', searchQuery, targetLanguage),
 
   getPredictedTranslations: (query: string) =>
     ipcRenderer.invoke('get-predicted-translations', query),

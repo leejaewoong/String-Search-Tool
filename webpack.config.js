@@ -1,6 +1,5 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -74,16 +73,6 @@ const mainConfig = {
   resolve: {
     extensions: ['.ts', '.js'],
   },
-  plugins: [
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, 'node_modules/wordnet-db/dict'),
-          to: path.resolve(__dirname, 'build/dict'),
-        },
-      ],
-    }),
-  ],
   node: {
     __dirname: false,
     __filename: false,

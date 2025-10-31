@@ -1,3 +1,8 @@
+import * as dotenv from 'dotenv';
+
+// .env 파일 로드
+dotenv.config();
+
 interface PredictedTranslation {
   language: string;
   value: string;
@@ -221,6 +226,134 @@ class OpenAIService {
       return result;
     } catch (error) {
       console.error('축약 번역 API 호출 실패:', error);
+      throw error;
+    }
+  }
+
+  async getSynonyms(searchQuery: string, targetLanguage: string): Promise<string[]> {
+    const apiKey = this.getApiKey();
+
+    try {
+      // 언어 코드를 언어명으로 변환
+      const languageNames: { [key: string]: string } = {
+        'ko': 'Korean',
+        'ja': 'Japanese',
+        'zh': 'Chinese',
+        'zh-CN': 'Simplified Chinese',
+        'zh-TW': 'Traditional Chinese',
+        'en': 'English',
+        'de': 'German',
+        'es': 'Spanish',
+        'es-MX': 'Mexican Spanish',
+        'fr': 'French',
+        'it': 'Italian',
+        'pt': 'Portuguese',
+        'pt-BR': 'Brazilian Portuguese',
+        'ru': 'Russian',
+        'ar': 'Arabic',
+        'hi': 'Hindi',
+        'th': 'Thai',
+        'vi': 'Vietnamese',
+        'id': 'Indonesian',
+        'tr': 'Turkish',
+        'pl': 'Polish',
+        'uk': 'Ukrainian',
+        'ur': 'Urdu',
+        'ca': 'Catalan',
+        'ku': 'Kurdish',
+        'ga-IE': 'Irish',
+      };
+
+      const languageName = languageNames[targetLanguage] || 'English';
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: this.model,
+          messages: [
+            {
+              role: 'system',
+              content: `You are a linguistic expert specializing in finding semantically similar words and phrases for game UI text search.
+
+              Your task: Extract 1-3 KEY WORDS from the input query, then provide semantically similar words/phrases for each key word in the specified language.
+
+              RULES:
+              1. If input is a single word or short phrase (≤2 words): Provide synonyms directly
+              2. If input is a longer phrase/sentence (>2 words): First extract 1-3 key words, then provide synonyms for each
+              3. Return MAXIMUM 5 MOST semantically similar words/phrases per key word
+              4. Similar words should be contextually relevant for game UI (buttons, labels, menus)
+              5. PRIORITIZE semantic similarity over literal synonyms - focus on meaning, not just dictionary synonyms
+              6. Focus on words that would ACTUALLY appear in similar game UI contexts (not theoretical synonyms)
+              7. Exclude loosely related, tangentially connected, or overly broad terms
+              8. Prefer commonly used terms over rare or literary alternatives
+              9. Respond in the TARGET LANGUAGE specified by the user
+
+              RESPONSE FORMAT (JSON only):
+              {
+                "keywords": ["keyword1", "keyword2"],
+                "synonyms": ["synonym1", "synonym2", "synonym3", ...]
+              }
+
+              EXAMPLES:
+              Input: "player" (English)
+              Output: {"keywords": ["player"], "synonyms": ["user", "character", "gamer", "hero", "avatar"]}
+
+              Input: "show player statistics" (English)
+              Output: {"keywords": ["player", "statistics"], "synonyms": ["user", "character", "gamer", "stats", "info", "data", "details"]}
+
+              Input: "플레이어" (Korean)
+              Output: {"keywords": ["플레이어"], "synonyms": ["사용자", "유저", "캐릭터", "게이머"]}`
+            },
+            {
+              role: 'user',
+              content: `Search query: "${searchQuery}"
+                Target language: ${languageName} (${targetLanguage})
+
+                Extract key words (if needed) and provide semantically similar words/phrases in ${languageName}.
+                Respond with JSON only.`
+            }
+          ],
+          temperature: 0.2,
+          max_tokens: 300,
+          response_format: { type: "json_object" },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`OpenAI API 오류: ${errorData.error?.message || response.statusText}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices[0]?.message?.content;
+
+      if (!content) {
+        throw new Error('OpenAI로부터 응답을 받지 못했습니다.');
+      }
+
+      console.log('[OpenAI] Synonyms response:', content);
+
+      // JSON 파싱
+      let result: any;
+      try {
+        result = JSON.parse(content);
+      } catch (parseError) {
+        console.error('[OpenAI] JSON 파싱 실패. 응답 내용:', content);
+        throw new Error(`OpenAI 응답이 JSON 형식이 아닙니다.`);
+      }
+
+      // synonyms 배열 반환
+      if (result.synonyms && Array.isArray(result.synonyms)) {
+        return result.synonyms;
+      }
+
+      return [];
+    } catch (error) {
+      console.error('유의어 검색 API 호출 실패:', error);
       throw error;
     }
   }

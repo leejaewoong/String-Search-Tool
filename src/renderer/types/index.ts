@@ -47,7 +47,7 @@ export interface ElectronAPI {
   saveSearchHistory: (query: string) => Promise<boolean>;
   getSearchHistory: () => Promise<string[]>;
   searchTranslations: (stringId: string) => Promise<SearchResult[]>;
-  searchSynonyms: (stringId: string, targetLanguage: string) => Promise<SynonymSearchResult>;
+  searchSynonyms: (searchQuery: string, targetLanguage: string) => Promise<SynonymSearchResult>;
   getPredictedTranslations: (query: string) => Promise<PredictedTranslation[]>;
   getAbbreviatedTranslations: (originalEnglish: string, formalTranslations: PredictedTranslation[], languagesToAbbreviate: string[]) => Promise<PredictedTranslation[]>;
   trackSearch: (language: string) => Promise<boolean>;

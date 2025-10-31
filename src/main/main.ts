@@ -86,8 +86,8 @@ function registerIpcHandlers() {
   });
 
   // 유의어 검색
-  ipcMain.handle('search-synonyms', async (_event, stringId, targetLanguage) => {
-    return searchService.searchSynonyms(stringId, targetLanguage);
+  ipcMain.handle('search-synonyms', async (_event, searchQuery, targetLanguage) => {
+    return searchService.searchSynonyms(searchQuery, targetLanguage);
   });
 
   // AI 예상 번역
