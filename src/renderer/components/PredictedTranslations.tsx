@@ -11,14 +11,12 @@ interface PredictedTranslationsProps {
   originalEnglish: string;
   translations: PredictedTranslation[];
   onCopy: (text: string) => void;
-  onClose: () => void;
 }
 
 export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
   originalEnglish,
   translations,
   onCopy,
-  onClose,
 }) => {
   const [sortedTranslations, setSortedTranslations] = useState<PredictedTranslation[]>([]);
   const [abbreviatedTranslations, setAbbreviatedTranslations] = useState<PredictedTranslation[]>([]);
@@ -72,16 +70,7 @@ export const PredictedTranslations: React.FC<PredictedTranslationsProps> = ({
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between p-4 border-b border-figma-border">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={onClose}
-            className="btn-icon"
-            title="뒤로가기"
-          >
-            ←
-          </button>
-          <h2 className="text-base font-semibold">AI 예상 번역</h2>
-        </div>
+        <h2 className="text-base font-semibold">AI 예상 번역</h2>
 
         <div className="flex gap-2">
           <label className="flex items-center gap-2 cursor-pointer">

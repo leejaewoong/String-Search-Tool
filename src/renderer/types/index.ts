@@ -21,7 +21,6 @@ export interface AnalyticsData {
   features: {
     synonymsViews: number;
     translationsViews: number;
-    detailViewOpens: number;
     predictedTranslationsViews: number;
     predictedTranslationsFailed: number;
     abbreviatedTranslationsViews: number;
@@ -53,8 +52,7 @@ export interface ElectronAPI {
   trackSearch: (language: string) => Promise<boolean>;
   trackGitPull: () => Promise<boolean>;
   trackSynonymsView: () => Promise<boolean>;
-  trackTranslationsView: () => Promise<boolean>;
-  trackDetailViewOpen: () => Promise<boolean>;
+  trackTranslationsView: (source: 'gdd' | 'synonym') => Promise<boolean>;
   trackPredictedTranslations: () => Promise<boolean>;
   trackPredictedTranslationsFailed: () => Promise<boolean>;
   trackAbbreviatedTranslations: () => Promise<boolean>;

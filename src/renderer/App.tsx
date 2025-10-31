@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
-import { SearchBar } from './components/SearchBar';
+import { SearchBar, SearchMode } from './components/SearchBar';
 import { SearchResults } from './components/SearchResults';
 import { StatusBar } from './components/StatusBar';
 import { PathSettingModal } from './components/PathSettingModal';
 import { DetailView } from './components/DetailView';
 import { LoadingOverlay } from './components/LoadingOverlay';
 import { PredictedTranslations } from './components/PredictedTranslations';
-import { SearchResult } from './types';
+import { SearchResult, SynonymSearchResult } from './types';
 
 const App: React.FC = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('ko');
   const [languages, setLanguages] = useState<string[]>([]);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [synonymResults, setSynonymResults] = useState<SynonymSearchResult | null>(null);
   const [lastUpdateTime, setLastUpdateTime] = useState<string | null>(null);
   const [isPathModalOpen, setIsPathModalOpen] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
@@ -23,6 +24,8 @@ const App: React.FC = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPredicted, setShowPredicted] = useState(false);
+  const [selectedSearchMode, setSelectedSearchMode] = useState<SearchMode>('gdd'); // SearchBar에서 선택된 모드
+  const [activeSearchMode, setActiveSearchMode] = useState<SearchMode>('gdd'); // 실제 검색이 수행된 모드
   const [predictedTranslations, setPredictedTranslations] = useState<Array<{language: string, value: string}>>([]);
 
   useEffect(() => {
@@ -47,33 +50,57 @@ const App: React.FC = () => {
     setIsSearchDisabled(!isValidPath);
   };
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = async (query: string, mode: SearchMode) => {
     setCurrentQuery(query);
     setHasSearched(true);
     setShowPredicted(false);
-
-    // 일반 검색
-    const results = await window.electron.searchStrings(query, selectedLanguage);
-    setSearchResults(results);
     setSelectedResult(null);
-    await window.electron.saveSearchHistory(query);
+    setIsLoading(true);
+    setActiveSearchMode(mode); // 검색 수행 시 activeSearchMode 업데이트
 
-    const history = await window.electron.getSearchHistory();
-    setSearchHistory(history);
+    try {
+      if (mode === 'gdd') {
+        // GDD 검색
+        const results = await window.electron.searchStrings(query, selectedLanguage);
+        setSearchResults(results);
+        setSynonymResults(null);
+        await window.electron.trackSearch(selectedLanguage);
+      } else if (mode === 'synonym') {
+        // 유의어 검색
+        const data = await window.electron.searchSynonyms(query, selectedLanguage);
+        setSynonymResults(data);
+        setSearchResults([]);
+        await window.electron.trackSynonymsView();
+      } else if (mode === 'ai') {
+        // AI 번역
+        await window.electron.trackPredictedTranslations();
+        const translations = await window.electron.getPredictedTranslations(query);
+        setPredictedTranslations(translations);
+        setShowPredicted(true);
+        setSearchResults([]);
+        setSynonymResults(null);
+      }
 
-    // Analytics: 검색 이벤트 추적
-    await window.electron.trackSearch(selectedLanguage);
+      await window.electron.saveSearchHistory(query);
+      const history = await window.electron.getSearchHistory();
+      setSearchHistory(history);
+    } catch (error) {
+      if (mode === 'ai') {
+        await window.electron.trackPredictedTranslationsFailed();
+      }
+      alert('검색 실패: ' + error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLanguageChange = (lang: string) => {
     setSelectedLanguage(lang);
-    if (currentQuery) {
-      handleSearch(currentQuery);
-    }
+    // 검색 버튼을 누를 때까지 재검색하지 않음
   };
 
   const handleHistorySelect = (query: string) => {
-    handleSearch(query);
+    handleSearch(query, selectedSearchMode);
   };
 
   const handlePathSetting = () => {
@@ -142,35 +169,14 @@ const App: React.FC = () => {
   const handleRowClick = async (result: SearchResult) => {
     setSelectedResult(result);
 
-    // Analytics: 상세 뷰 열기 이벤트 추적
-    await window.electron.trackDetailViewOpen();
+    // Analytics: 번역 조회 이벤트 추적 (진입 경로: gdd 또는 synonym)
+    if (activeSearchMode === 'gdd' || activeSearchMode === 'synonym') {
+      await window.electron.trackTranslationsView(activeSearchMode);
+    }
   };
 
   const handleCloseDetail = () => {
     setSelectedResult(null);
-  };
-
-  const handleShowPredicted = async () => {
-    setIsLoading(true);
-
-    // Analytics: AI 예상 번역 시도 이벤트 추적
-    await window.electron.trackPredictedTranslations();
-
-    try {
-      const translations = await window.electron.getPredictedTranslations(currentQuery);
-      setPredictedTranslations(translations);
-      setShowPredicted(true);
-    } catch (error) {
-      // Analytics: AI 예상 번역 실패 이벤트 추적
-      await window.electron.trackPredictedTranslationsFailed();
-      alert('AI 예상 번역을 가져오는데 실패했습니다.\n' + error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleClosePredicted = () => {
-    setShowPredicted(false);
   };
 
   return (
@@ -194,6 +200,8 @@ const App: React.FC = () => {
         onLanguageChange={handleLanguageChange}
         searchHistory={searchHistory}
         onHistorySelect={handleHistorySelect}
+        searchMode={selectedSearchMode}
+        onSearchModeChange={setSelectedSearchMode}
       />
 
       <div className="flex-1 overflow-hidden">
@@ -202,23 +210,22 @@ const App: React.FC = () => {
             result={selectedResult}
             onClose={handleCloseDetail}
             onCopy={handleCopy}
-            selectedLanguage={selectedLanguage}
           />
         ) : showPredicted ? (
           <PredictedTranslations
             originalEnglish={currentQuery}
             translations={predictedTranslations}
             onCopy={handleCopy}
-            onClose={handleClosePredicted}
           />
         ) : (
           <SearchResults
-            results={searchResults}
+            results={activeSearchMode === 'gdd' ? searchResults : synonymResults?.results || []}
+            synonymsList={activeSearchMode === 'synonym' ? synonymResults?.synonymsList : undefined}
             onRowClick={handleRowClick}
             onCopy={handleCopy}
             hasSearched={hasSearched}
             isSearchDisabled={isSearchDisabled}
-            onShowPredicted={handleShowPredicted}
+            searchMode={activeSearchMode}
           />
         )}
       </div>
