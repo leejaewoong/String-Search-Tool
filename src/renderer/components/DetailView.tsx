@@ -47,8 +47,8 @@ export const DetailView: React.FC<DetailViewProps> = ({
   const loadSynonyms = async () => {
     setIsLoadingSynonyms(true);
     try {
-      // 현재 선택된 언어로 유의어 검색
-      const data = await window.electron.searchSynonyms(result.id, selectedLanguage);
+      // 현재 선택된 언어의 검색어로 유의어 검색
+      const data = await window.electron.searchSynonyms(result.value, selectedLanguage);
       setSynonyms(data.results);
       setSynonymsList(data.synonymsList);
     } catch (error) {
