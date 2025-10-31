@@ -4,6 +4,8 @@ export interface SearchResult {
   filename: string;
   matchType?: 'direct' | 'synonym';
   synonymSource?: string;
+  isInputFolder?: boolean;
+  priority?: number;
 }
 
 export interface SynonymSearchResult {

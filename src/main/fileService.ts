@@ -7,12 +7,21 @@ interface FileData {
   [key: string]: string;
 }
 
+interface InputFileData {
+  [stringId: string]: {
+    Text: string;
+    ReleaseDate: string;
+  };
+}
+
 class FileService {
   private cachedFiles: Map<string, FileData> = new Map();
+  private inputFiles: Map<string, InputFileData> = new Map();
   private languages: string[] = [];
 
   async loadFiles(folderPath: string): Promise<void> {
     this.cachedFiles.clear();
+    this.inputFiles.clear();
     this.languages = [];
 
     if (!fs.existsSync(folderPath)) {
@@ -49,6 +58,38 @@ class FileService {
       if (b === 'ko') return 1;
       return a.localeCompare(b);
     });
+
+    // input 폴더 로딩
+    await this.loadInputFiles(folderPath);
+  }
+
+  private async loadInputFiles(folderPath: string): Promise<void> {
+    const inputPath = path.join(folderPath, 'input');
+
+    if (!fs.existsSync(inputPath)) {
+      console.log('[FileService] input folder not found, skipping');
+      return;
+    }
+
+    try {
+      const inputFilesList = fs.readdirSync(inputPath);
+
+      for (const file of inputFilesList) {
+        if (!file.startsWith('ui_') || !file.endsWith('.json')) {
+          continue;
+        }
+
+        const filePath = path.join(inputPath, file);
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const data = JSON.parse(content) as InputFileData;
+
+        this.inputFiles.set(file, data);
+      }
+
+      console.log(`[FileService] Loaded ${this.inputFiles.size} input folder files`);
+    } catch (error) {
+      console.error('[FileService] Failed to load input files:', error);
+    }
   }
 
   getLanguages(): string[] {
@@ -61,6 +102,10 @@ class FileService {
 
   getAllFiles(): Map<string, FileData> {
     return this.cachedFiles;
+  }
+
+  getInputFiles(): Map<string, InputFileData> {
+    return this.inputFiles;
   }
 }
 
