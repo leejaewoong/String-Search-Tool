@@ -55,7 +55,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleSearch = () => {
     if (query.trim()) {
-      onSearch(query, searchMode);
+      onSearch(query.trim(), searchMode);
     }
   };
 
