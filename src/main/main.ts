@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { app, BrowserWindow, ipcMain, dialog, clipboard } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, clipboard, shell } from 'electron';
 import * as path from 'path';
 import Store from 'electron-store';
 import { fileService } from './fileService';
@@ -217,5 +217,11 @@ function registerIpcHandlers() {
   // 앱 버전 가져오기
   ipcMain.handle('get-app-version', async () => {
     return app.getVersion();
+  });
+
+  // 외부 링크 열기
+  ipcMain.handle('open-external', async (_event, url) => {
+    await shell.openExternal(url);
+    return true;
   });
 }
