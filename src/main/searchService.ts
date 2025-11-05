@@ -133,12 +133,10 @@ class SearchService {
           shouldAdd = true;
           priority = 1;
         }
-        // 우선순위 2: Text 부분 일치 (en일 때만)
+        // 우선순위 2: Text 부분 일치 (모든 언어)
         else if (lowerText.includes(lowerQuery)) {
-          if (language === 'en') {
-            shouldAdd = true;
-            priority = 2;
-          }
+          shouldAdd = true;
+          priority = 2;
         }
         // 우선순위 3: String ID 부분 일치 (모든 언어)
         else if (lowerId.includes(lowerQuery)) {
