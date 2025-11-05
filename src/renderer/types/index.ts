@@ -62,6 +62,7 @@ export interface ElectronAPI {
   getAnalyticsData: () => Promise<AnalyticsData>;
   getAppVersion: () => Promise<string>;
   openExternal: (url: string) => Promise<boolean>;
+  getPatchNotes: () => Promise<string>;
 }
 
 declare global {

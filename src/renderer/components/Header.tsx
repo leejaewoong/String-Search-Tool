@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { PatchNotesModal } from './PatchNotesModal';
 
 interface HeaderProps {
   selectedLanguage: string;
@@ -19,6 +20,7 @@ export const Header: React.FC<HeaderProps> = ({
   onPathSetting,
   onGitPull,
 }) => {
+  const [isPatchNotesOpen, setIsPatchNotesOpen] = useState(false);
   return (
     <div className="flex items-center justify-between p-4 border-b border-figma-border">
       <div className="flex items-center gap-3">
@@ -38,6 +40,13 @@ export const Header: React.FC<HeaderProps> = ({
           title="Git Pull"
         >
           🔄
+        </button>        
+        <button
+          onClick={() => setIsPatchNotesOpen(true)}
+          className="btn-icon"
+          title="패치 노트"
+        >
+          🗒️
         </button>
         <button
           onClick={() => window.electron.openExternal('https://krafton.atlassian.net/wiki/spaces/~jaewoong/blog/2025/10/27/781238267/string-search-tool')}
@@ -47,6 +56,10 @@ export const Header: React.FC<HeaderProps> = ({
           ❓
         </button>
       </div>
+      <PatchNotesModal
+        isOpen={isPatchNotesOpen}
+        onClose={() => setIsPatchNotesOpen(false)}
+      />
     </div>
   );
 };

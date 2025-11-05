@@ -79,4 +79,7 @@ contextBridge.exposeInMainWorld('electron', {
 
   openExternal: (url: string) =>
     ipcRenderer.invoke('open-external', url),
+
+  getPatchNotes: () =>
+    ipcRenderer.invoke('get-patch-notes'),
 });

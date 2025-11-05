@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { app, BrowserWindow, ipcMain, dialog, clipboard, shell } from 'electron';
 import * as path from 'path';
+import * as fs from 'fs/promises';
 import Store from 'electron-store';
 import { fileService } from './fileService';
 import { searchService } from './searchService';
@@ -223,5 +224,17 @@ function registerIpcHandlers() {
   ipcMain.handle('open-external', async (_event, url) => {
     await shell.openExternal(url);
     return true;
+  });
+
+  // 패치 노트 읽기
+  ipcMain.handle('get-patch-notes', async () => {
+    try {
+      const patchNotesPath = path.join(__dirname, '../PATCH_NOTES.md');
+      const content = await fs.readFile(patchNotesPath, 'utf-8');
+      return content;
+    } catch (error) {
+      console.error('Failed to read PATCH_NOTES.md:', error);
+      return '# 패치 노트\n\n패치 노트를 불러올 수 없습니다.';
+    }
   });
 }
