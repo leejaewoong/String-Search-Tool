@@ -21,6 +21,8 @@ interface AnalyticsData {
     predictedTranslationsFailed: number;
     abbreviatedTranslationsViews: number;
     abbreviatedTranslationsFailed: number;
+    guideButtonClicks: number;
+    patchNotesButtonClicks: number;
   };
 }
 
@@ -48,6 +50,8 @@ class AnalyticsService {
           predictedTranslationsFailed: 0,
           abbreviatedTranslationsViews: 0,
           abbreviatedTranslationsFailed: 0,
+          guideButtonClicks: 0,
+          patchNotesButtonClicks: 0,
         },
       },
     });
@@ -172,17 +176,18 @@ class AnalyticsService {
 
   /**
    * 유의어 조회 이벤트 추적
+   * @param source - 진입 경로: 'search' (검색 모드) 또는 'noResult' (검색 결과 없음)
    */
-  trackSynonymsView(): void {
+  trackSynonymsView(source: 'search' | 'noResult' = 'search'): void {
     // GA4 즉시 전송
-    this.sendGA4Event('synonyms_view', {});
+    this.sendGA4Event('synonyms_view', { source });
 
     // 로컬 카운터 증가
     const features = this.store.get('features');
     features.synonymsViews += 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Synonyms view tracked:', features.synonymsViews);
+    console.log('[Analytics] Synonyms view tracked from', source, ':', features.synonymsViews);
   }
 
   /**
@@ -203,17 +208,18 @@ class AnalyticsService {
 
   /**
    * AI 예상 번역 조회 이벤트 추적
+   * @param source - 진입 경로: 'search' (검색 모드) 또는 'noResult' (검색 결과 없음)
    */
-  trackPredictedTranslations(): void {
+  trackPredictedTranslations(source: 'search' | 'noResult' = 'search'): void {
     // GA4 즉시 전송
-    this.sendGA4Event('predicted_translations_view', {});
+    this.sendGA4Event('predicted_translations_view', { source });
 
     // 로컬 카운터 증가
     const features = this.store.get('features');
     features.predictedTranslationsViews = (features.predictedTranslationsViews || 0) + 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Predicted translations view tracked:', features.predictedTranslationsViews);
+    console.log('[Analytics] Predicted translations view tracked from', source, ':', features.predictedTranslationsViews);
   }
 
   /**
@@ -259,6 +265,36 @@ class AnalyticsService {
     this.store.set('features', features);
 
     console.log('[Analytics] Abbreviated translations failed tracked:', features.abbreviatedTranslationsFailed);
+  }
+
+  /**
+   * 사용 가이드 버튼 클릭 이벤트 추적
+   */
+  trackGuideButtonClick(): void {
+    // GA4 즉시 전송
+    this.sendGA4Event('guide_button_click', {});
+
+    // 로컬 카운터 증가
+    const features = this.store.get('features');
+    features.guideButtonClicks = (features.guideButtonClicks || 0) + 1;
+    this.store.set('features', features);
+
+    console.log('[Analytics] Guide button click tracked:', features.guideButtonClicks);
+  }
+
+  /**
+   * 패치 노트 버튼 클릭 이벤트 추적
+   */
+  trackPatchNotesButtonClick(): void {
+    // GA4 즉시 전송
+    this.sendGA4Event('patch_notes_button_click', {});
+
+    // 로컬 카운터 증가
+    const features = this.store.get('features');
+    features.patchNotesButtonClicks = (features.patchNotesButtonClicks || 0) + 1;
+    this.store.set('features', features);
+
+    console.log('[Analytics] Patch notes button click tracked:', features.patchNotesButtonClicks);
   }
 
   /**
