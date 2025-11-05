@@ -10,6 +10,8 @@ interface SearchResultsProps {
   hasSearched?: boolean;
   isSearchDisabled?: boolean;
   searchMode: SearchMode;
+  currentQuery?: string;
+  onSearchWithMode?: (mode: SearchMode) => void;
 }
 
 export const SearchResults: React.FC<SearchResultsProps> = ({
@@ -20,6 +22,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   hasSearched = false,
   isSearchDisabled = false,
   searchMode,
+  currentQuery = '',
+  onSearchWithMode,
 }) => {
   
   return (
@@ -61,6 +65,24 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                     : '일치하는 String이 없습니다.')
                 : '안녕하세요, 저는 UX Design팀에서 만든 프로그램입니다 : )'}
           </div>
+          {hasSearched && !isSearchDisabled && searchMode === 'gdd' && onSearchWithMode && currentQuery && (
+            <div className="flex gap-3 mt-2">
+              <button
+                onClick={() => onSearchWithMode('ai')}
+                className="px-4 py-2 bg-figma-bg-tertiary text-figma-text border border-figma-border rounded hover:bg-figma-hover transition-all"                
+                title="검색어의 예상 번역 결과를 확인합니다"
+              >
+                AI 번역
+              </button>
+              <button
+                onClick={() => onSearchWithMode('synonym')}
+                className="px-4 py-2 bg-figma-bg-tertiary text-figma-text border border-figma-border rounded hover:bg-figma-hover transition-all"
+                title="GDD에 유의어가 등록되어 있는지 확인합니다"
+              >
+                유의어 검색
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex-1 p-4 flex flex-col min-h-0">

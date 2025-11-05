@@ -15,7 +15,8 @@
       "Read(//c/Users/iamle/바탕 화면/game-design-data/localization/ui/**)",
       "Bash(npx ts-node scripts/generateTrainingData.ts)",
       "Bash(taskkill:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(cmd /c \"move src\\renderer\\components\\PatchNotesModal.css src\\renderer\\styles\\PatchNotesModal.css\")"
     ],
     "deny": [],
     "ask": []
