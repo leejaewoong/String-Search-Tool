@@ -27,6 +27,8 @@ export interface AnalyticsData {
     predictedTranslationsFailed: number;
     abbreviatedTranslationsViews: number;
     abbreviatedTranslationsFailed: number;
+    guideButtonClicks: number;
+    patchNotesButtonClicks: number;
   };
 }
 
@@ -53,12 +55,14 @@ export interface ElectronAPI {
   getAbbreviatedTranslations: (originalEnglish: string, formalTranslations: PredictedTranslation[], languagesToAbbreviate: string[]) => Promise<PredictedTranslation[]>;
   trackSearch: (language: string) => Promise<boolean>;
   trackGitPull: () => Promise<boolean>;
-  trackSynonymsView: () => Promise<boolean>;
+  trackSynonymsView: (source?: 'search' | 'noResult') => Promise<boolean>;
   trackTranslationsView: (source: 'gdd' | 'synonym') => Promise<boolean>;
-  trackPredictedTranslations: () => Promise<boolean>;
+  trackPredictedTranslations: (source?: 'search' | 'noResult') => Promise<boolean>;
   trackPredictedTranslationsFailed: () => Promise<boolean>;
   trackAbbreviatedTranslations: () => Promise<boolean>;
   trackAbbreviatedTranslationsFailed: () => Promise<boolean>;
+  trackGuideButtonClick: () => Promise<boolean>;
+  trackPatchNotesButtonClick: () => Promise<boolean>;
   getAnalyticsData: () => Promise<AnalyticsData>;
   getAppVersion: () => Promise<string>;
   openExternal: (url: string) => Promise<boolean>;

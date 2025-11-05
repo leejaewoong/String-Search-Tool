@@ -181,8 +181,8 @@ function registerIpcHandlers() {
     return true;
   });
 
-  ipcMain.handle('track-synonyms-view', async () => {
-    analyticsService.trackSynonymsView();
+  ipcMain.handle('track-synonyms-view', async (_event, source?: 'search' | 'noResult') => {
+    analyticsService.trackSynonymsView(source);
     return true;
   });
 
@@ -191,8 +191,8 @@ function registerIpcHandlers() {
     return true;
   });
 
-  ipcMain.handle('track-predicted-translations', async () => {
-    analyticsService.trackPredictedTranslations();
+  ipcMain.handle('track-predicted-translations', async (_event, source?: 'search' | 'noResult') => {
+    analyticsService.trackPredictedTranslations(source);
     return true;
   });
 
@@ -213,6 +213,16 @@ function registerIpcHandlers() {
 
   ipcMain.handle('get-analytics-data', async () => {
     return analyticsService.getAnalyticsData();
+  });
+
+  ipcMain.handle('track-guide-button-click', async () => {
+    analyticsService.trackGuideButtonClick();
+    return true;
+  });
+
+  ipcMain.handle('track-patch-notes-button-click', async () => {
+    analyticsService.trackPatchNotesButtonClick();
+    return true;
   });
 
   // 앱 버전 가져오기

@@ -42,14 +42,20 @@ export const Header: React.FC<HeaderProps> = ({
           🔄
         </button>        
         <button
-          onClick={() => setIsPatchNotesOpen(true)}
+          onClick={() => {
+            window.electron.trackPatchNotesButtonClick();
+            setIsPatchNotesOpen(true);
+          }}
           className="btn-icon"
           title="패치 노트"
         >
           🗒️
         </button>
         <button
-          onClick={() => window.electron.openExternal('https://krafton.atlassian.net/wiki/spaces/~jaewoong/blog/2025/10/27/781238267/string-search-tool')}
+          onClick={() => {
+            window.electron.trackGuideButtonClick();
+            window.electron.openExternal('https://krafton.atlassian.net/wiki/spaces/~jaewoong/blog/2025/10/27/781238267/string-search-tool');
+          }}
           className="btn-icon"
           title="사용 가이드"
         >

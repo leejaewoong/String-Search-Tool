@@ -70,10 +70,10 @@ const App: React.FC = () => {
         const data = await window.electron.searchSynonyms(query, selectedLanguage);
         setSynonymResults(data);
         setSearchResults([]);
-        await window.electron.trackSynonymsView();
+        await window.electron.trackSynonymsView('search');
       } else if (mode === 'ai') {
         // AI 번역
-        await window.electron.trackPredictedTranslations();
+        await window.electron.trackPredictedTranslations('search');
         const translations = await window.electron.getPredictedTranslations(query);
         setPredictedTranslations(translations);
         setShowPredicted(true);
@@ -179,6 +179,38 @@ const App: React.FC = () => {
     setSelectedResult(null);
   };
 
+  const handleNoResultSearch = async (mode: SearchMode) => {
+    setShowPredicted(false);
+    setSelectedResult(null);
+    setIsLoading(true);
+    setActiveSearchMode(mode);
+
+    try {
+      if (mode === 'synonym') {
+        // 유의어 검색 (결과 없음에서 진입)
+        const data = await window.electron.searchSynonyms(currentQuery, selectedLanguage);
+        setSynonymResults(data);
+        setSearchResults([]);
+        await window.electron.trackSynonymsView('noResult');
+      } else if (mode === 'ai') {
+        // AI 번역 (결과 없음에서 진입)
+        await window.electron.trackPredictedTranslations('noResult');
+        const translations = await window.electron.getPredictedTranslations(currentQuery);
+        setPredictedTranslations(translations);
+        setShowPredicted(true);
+        setSearchResults([]);
+        setSynonymResults(null);
+      }
+    } catch (error) {
+      if (mode === 'ai') {
+        await window.electron.trackPredictedTranslationsFailed();
+      }
+      alert('검색 실패: ' + error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-figma-bg text-figma-text">
       <Header
@@ -227,7 +259,7 @@ const App: React.FC = () => {
             isSearchDisabled={isSearchDisabled}
             searchMode={activeSearchMode}
             currentQuery={currentQuery}
-            onSearchWithMode={(mode) => handleSearch(currentQuery, mode)}
+            onSearchWithMode={handleNoResultSearch}
           />
         )}
       </div>

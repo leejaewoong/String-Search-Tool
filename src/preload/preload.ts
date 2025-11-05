@@ -53,14 +53,14 @@ contextBridge.exposeInMainWorld('electron', {
   trackGitPull: () =>
     ipcRenderer.invoke('track-git-pull'),
 
-  trackSynonymsView: () =>
-    ipcRenderer.invoke('track-synonyms-view'),
+  trackSynonymsView: (source?: 'search' | 'noResult') =>
+    ipcRenderer.invoke('track-synonyms-view', source),
 
   trackTranslationsView: (source: 'gdd' | 'synonym') =>
     ipcRenderer.invoke('track-translations-view', source),
 
-  trackPredictedTranslations: () =>
-    ipcRenderer.invoke('track-predicted-translations'),
+  trackPredictedTranslations: (source?: 'search' | 'noResult') =>
+    ipcRenderer.invoke('track-predicted-translations', source),
 
   trackPredictedTranslationsFailed: () =>
     ipcRenderer.invoke('track-predicted-translations-failed'),
@@ -73,6 +73,12 @@ contextBridge.exposeInMainWorld('electron', {
 
   getAnalyticsData: () =>
     ipcRenderer.invoke('get-analytics-data'),
+
+  trackGuideButtonClick: () =>
+    ipcRenderer.invoke('track-guide-button-click'),
+
+  trackPatchNotesButtonClick: () =>
+    ipcRenderer.invoke('track-patch-notes-button-click'),
 
   getAppVersion: () =>
     ipcRenderer.invoke('get-app-version'),

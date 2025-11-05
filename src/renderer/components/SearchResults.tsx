@@ -69,7 +69,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             <div className="flex gap-3 mt-2">
               <button
                 onClick={() => onSearchWithMode('ai')}
-                className="px-4 py-2 bg-figma-bg-tertiary text-figma-text border border-figma-border rounded hover:bg-figma-hover transition-all"                
+                className="px-4 py-2 bg-figma-bg-tertiary text-figma-text border border-figma-border rounded hover:bg-figma-hover transition-all"
                 title="검색어의 예상 번역 결과를 확인합니다"
               >
                 AI 번역
