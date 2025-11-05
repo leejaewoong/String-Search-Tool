@@ -16,8 +16,7 @@ export const PatchNotesModal: React.FC<PatchNotesModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      loadPatchNotes();
-      loadAppVersion();
+      loadPatchNotes();      
     }
   }, [isOpen]);
 
@@ -32,26 +31,18 @@ export const PatchNotesModal: React.FC<PatchNotesModalProps> = ({
     }
   };
 
-  const loadAppVersion = async () => {
-    try {
-      const version = await window.electron.getAppVersion();
-      setAppVersion(version);
-    } catch (error) {
-      console.error('Failed to load app version:', error);
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content patch-notes-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content patch-notes-modal" onClick={(e) => e.stopPropagation()}>        
         <div className="modal-header">
           <h2>패치 노트</h2>
-          {appVersion && <span className="app-version">현재 버전: v{appVersion}</span>}
-          <button className="modal-close-btn" onClick={onClose}>
-            ✕
+          <div className="flex justify-end">
+          <button className="modal-close-btn-text" onClick={onClose}>
+            닫기
           </button>
+        </div>
         </div>
         <div
           className="modal-body patch-notes-content"

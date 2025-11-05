@@ -15,18 +15,24 @@
   background: var(--bg-secondary);
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  max-width: 800px;
+  max-width: none;
   max-height: 80vh;
-  width: 90%;
+  width: 80%;
   display: flex;
   flex-direction: column;
+}
+
+/* 패치 노트 모달 전용 스타일 - globals.css의 max-w-lg를 덮어씀 */
+.modal-content.patch-notes-modal {
+  width: 80% !important;
+  max-width: 80% !important;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 0px 24px 24px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -64,8 +70,24 @@
   color: var(--text-primary);
 }
 
+.modal-close-btn-text {
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px 0px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.modal-close-btn-text:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+}
+
 .modal-body {
-  padding: 24px;
+  padding: 0px 24px 24px;
   overflow-y: auto;
   flex: 1;
 }
