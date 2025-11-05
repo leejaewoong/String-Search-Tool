@@ -226,6 +226,8 @@ const App: React.FC = () => {
             hasSearched={hasSearched}
             isSearchDisabled={isSearchDisabled}
             searchMode={activeSearchMode}
+            currentQuery={currentQuery}
+            onSearchWithMode={(mode) => handleSearch(currentQuery, mode)}
           />
         )}
       </div>
