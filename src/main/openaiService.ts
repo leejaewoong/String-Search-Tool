@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import { logInfo, logError } from './logUtil';
 
 // .env 파일 로드
 dotenv.config();
@@ -20,16 +21,16 @@ class OpenAIService {
 
   constructor() {
     this.model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
-    console.log('[OpenAI] Constructor called');
-    console.log('[OpenAI] API Key exists:', !!process.env.OPENAI_API_KEY);
-    console.log('[OpenAI] Using model:', this.model);
+    logInfo('[OpenAI] Constructor called');
+    logInfo('[OpenAI] API Key exists:', !!process.env.OPENAI_API_KEY);
+    logInfo('[OpenAI] Using model:', this.model);
   }
 
   private getApiKey(): string {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      console.error('[OpenAI] API Key not found in process.env');
-      console.error('[OpenAI] Available env vars:', Object.keys(process.env).filter(k => k.includes('OPENAI')));
+      logError('[OpenAI] API Key not found in process.env');
+      logError('[OpenAI] Available env vars:', Object.keys(process.env).filter(k => k.includes('OPENAI')));
       throw new Error('OpenAI API 키가 설정되지 않았습니다.');
     }
     return apiKey;
@@ -78,14 +79,14 @@ class OpenAIService {
         throw new Error('OpenAI로부터 응답을 받지 못했습니다.');
       }
 
-      console.log('[OpenAI] Raw response:', content.substring(0, 200));
+      logInfo('[OpenAI] Raw response:', content.substring(0, 200));
 
       // JSON 파싱 시도
       let translationsObj: any;
       try {
         translationsObj = JSON.parse(content);
       } catch (parseError) {
-        console.error('[OpenAI] JSON 파싱 실패. 응답 내용:', content);
+        logError('[OpenAI] JSON 파싱 실패. 응답 내용:', content);
         throw new Error(`OpenAI 응답이 JSON 형식이 아닙니다. 응답: ${content.substring(0, 100)}...`);
       }
 
@@ -105,7 +106,7 @@ class OpenAIService {
       
       return translations;
     } catch (error) {
-      console.error('OpenAI API 호출 실패:', error);
+      logError('OpenAI API 호출 실패:', error);
       throw error;
     }
   }
@@ -200,14 +201,14 @@ class OpenAIService {
         throw new Error('OpenAI로부터 응답을 받지 못했습니다.');
       }
 
-      console.log('[OpenAI] Abbreviated response:', content.substring(0, 200));
+      logInfo('[OpenAI] Abbreviated response:', content.substring(0, 200));
 
       // JSON 파싱
       let abbreviatedObj: any;
       try {
         abbreviatedObj = JSON.parse(content);
       } catch (parseError) {
-        console.error('[OpenAI] JSON 파싱 실패. 응답 내용:', content);
+        logError('[OpenAI] JSON 파싱 실패. 응답 내용:', content);
         throw new Error(`OpenAI 응답이 JSON 형식이 아닙니다.`);
       }
 
@@ -225,7 +226,7 @@ class OpenAIService {
 
       return result;
     } catch (error) {
-      console.error('축약 번역 API 호출 실패:', error);
+      logError('축약 번역 API 호출 실패:', error);
       throw error;
     }
   }
@@ -335,14 +336,14 @@ class OpenAIService {
         throw new Error('OpenAI로부터 응답을 받지 못했습니다.');
       }
 
-      console.log('[OpenAI] Synonyms response:', content);
+      logInfo('[OpenAI] Synonyms response:', content);
 
       // JSON 파싱
       let result: any;
       try {
         result = JSON.parse(content);
       } catch (parseError) {
-        console.error('[OpenAI] JSON 파싱 실패. 응답 내용:', content);
+        logError('[OpenAI] JSON 파싱 실패. 응답 내용:', content);
         throw new Error(`OpenAI 응답이 JSON 형식이 아닙니다.`);
       }
 
@@ -353,7 +354,7 @@ class OpenAIService {
 
       return [];
     } catch (error) {
-      console.error('유의어 검색 API 호출 실패:', error);
+      logError('유의어 검색 API 호출 실패:', error);
       throw error;
     }
   }

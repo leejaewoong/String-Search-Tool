@@ -2,6 +2,8 @@ import Store from 'electron-store';
 import { v4 as uuidv4 } from 'uuid';
 import crypto from 'crypto';
 import https from 'https';
+import { app } from 'electron';
+import { logInfo, logWarn, logError } from './logUtil';
 
 // GA4 Measurement ID (환경 변수 또는 설정에서 가져오기)
 const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID || 'G-XXXXXXXXXX';
@@ -59,16 +61,23 @@ class AnalyticsService {
     // User ID 생성 또는 가져오기
     this.userId = this.getOrCreateUserId();
 
-    // GA4 초기화 (프로덕션 모드에서만)
-    this.isProduction = process.env.NODE_ENV === 'production';
+    // GA4 초기화 (배포 버전에서만)
+    // app.isPackaged: electron-builder로 빌드된 모든 형태(NSIS, Portable)에서 true
+    this.isProduction = app.isPackaged || process.env.NODE_ENV === 'production';
     this.ga4Enabled = GA_MEASUREMENT_ID !== 'G-XXXXXXXXXX' && GA_API_SECRET !== '' && this.isProduction;
 
+    logInfo('[Analytics] Production mode:', this.isProduction);
+    logInfo('[Analytics] GA_MEASUREMENT_ID:', GA_MEASUREMENT_ID);
+    logInfo('[Analytics] GA_API_SECRET configured:', GA_API_SECRET !== '');
+
     if (this.ga4Enabled) {
-      console.log('[Analytics] GA4 enabled in production mode');
+      logInfo('[Analytics] GA4 enabled in production mode');
     } else if (!this.isProduction) {
-      console.log('[Analytics] Development mode - GA4 disabled, local tracking only');
+      logInfo('[Analytics] Development mode - GA4 disabled, local tracking only');
     } else if (GA_API_SECRET === '') {
-      console.log('[Analytics] GA4 API Secret not configured');
+      logWarn('[Analytics] GA4 API Secret not configured');
+    } else if (GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') {
+      logWarn('[Analytics] GA4 Measurement ID not configured');
     }
   }
 
@@ -92,7 +101,7 @@ class AnalyticsService {
    */
   private sendGA4Event(eventName: string, params: Record<string, any> = {}): void {
     if (!this.ga4Enabled) {
-      console.log('[Analytics] GA4 not configured, skipping event:', eventName);
+      logInfo('[Analytics] GA4 not configured, skipping event:', eventName);
       return;
     }
 
@@ -122,21 +131,32 @@ class AnalyticsService {
       };
 
       const req = https.request(options, (res) => {
-        if (res.statusCode === 204) {
-          console.log('[Analytics] Event sent to GA4:', eventName, params);
-        } else {
-          console.error('[Analytics] GA4 responded with status:', res.statusCode);
-        }
+        let data = '';
+
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+
+        res.on('end', () => {
+          if (res.statusCode === 204) {
+            logInfo('[Analytics] Event sent to GA4:', eventName, params);
+          } else {
+            logError('[Analytics] GA4 error - Status:', res.statusCode);
+            logError('[Analytics] GA4 error - Response:', data);
+            logError('[Analytics] GA4 error - Event:', eventName, params);
+          }
+        });
       });
 
       req.on('error', (error) => {
-        console.error('[Analytics] Failed to send GA4 event:', error.message);
+        logError('[Analytics] Failed to send GA4 event:', error.message);
+        logError('[Analytics] Event details:', eventName, params);
       });
 
       req.write(payload);
       req.end();
     } catch (error) {
-      console.error('[Analytics] Failed to send GA4 event:', error);
+      logError('[Analytics] Failed to send GA4 event:', error);
     }
   }
 
@@ -157,7 +177,7 @@ class AnalyticsService {
     languageUsage[language] = (languageUsage[language] || 0) + 1;
     this.store.set('languageUsage', languageUsage);
 
-    console.log('[Analytics] Search tracked:', language, 'Total:', totalSearches);
+    logInfo('[Analytics] Search tracked:', language, 'Total:', totalSearches);
   }
 
   /**
@@ -171,7 +191,7 @@ class AnalyticsService {
     const totalGitPulls = this.store.get('totalGitPulls') + 1;
     this.store.set('totalGitPulls', totalGitPulls);
 
-    console.log('[Analytics] Git Pull tracked. Total:', totalGitPulls);
+    logInfo('[Analytics] Git Pull tracked. Total:', totalGitPulls);
   }
 
   /**
@@ -187,7 +207,7 @@ class AnalyticsService {
     features.synonymsViews += 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Synonyms view tracked from', source, ':', features.synonymsViews);
+    logInfo('[Analytics] Synonyms view tracked from', source, ':', features.synonymsViews);
   }
 
   /**
@@ -203,7 +223,7 @@ class AnalyticsService {
     features.translationsViews += 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Translations view tracked from', source, ':', features.translationsViews);
+    logInfo('[Analytics] Translations view tracked from', source, ':', features.translationsViews);
   }
 
   /**
@@ -219,7 +239,7 @@ class AnalyticsService {
     features.predictedTranslationsViews = (features.predictedTranslationsViews || 0) + 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Predicted translations view tracked from', source, ':', features.predictedTranslationsViews);
+    logInfo('[Analytics] Predicted translations view tracked from', source, ':', features.predictedTranslationsViews);
   }
 
   /**
@@ -234,7 +254,7 @@ class AnalyticsService {
     features.predictedTranslationsFailed = (features.predictedTranslationsFailed || 0) + 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Predicted translations failed tracked:', features.predictedTranslationsFailed);
+    logInfo('[Analytics] Predicted translations failed tracked:', features.predictedTranslationsFailed);
   }
 
   /**
@@ -249,7 +269,7 @@ class AnalyticsService {
     features.abbreviatedTranslationsViews = (features.abbreviatedTranslationsViews || 0) + 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Abbreviated translations view tracked:', features.abbreviatedTranslationsViews);
+    logInfo('[Analytics] Abbreviated translations view tracked:', features.abbreviatedTranslationsViews);
   }
 
   /**
@@ -264,7 +284,7 @@ class AnalyticsService {
     features.abbreviatedTranslationsFailed = (features.abbreviatedTranslationsFailed || 0) + 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Abbreviated translations failed tracked:', features.abbreviatedTranslationsFailed);
+    logInfo('[Analytics] Abbreviated translations failed tracked:', features.abbreviatedTranslationsFailed);
   }
 
   /**
@@ -279,7 +299,7 @@ class AnalyticsService {
     features.guideButtonClicks = (features.guideButtonClicks || 0) + 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Guide button click tracked:', features.guideButtonClicks);
+    logInfo('[Analytics] Guide button click tracked:', features.guideButtonClicks);
   }
 
   /**
@@ -294,7 +314,7 @@ class AnalyticsService {
     features.patchNotesButtonClicks = (features.patchNotesButtonClicks || 0) + 1;
     this.store.set('features', features);
 
-    console.log('[Analytics] Patch notes button click tracked:', features.patchNotesButtonClicks);
+    logInfo('[Analytics] Patch notes button click tracked:', features.patchNotesButtonClicks);
   }
 
   /**
@@ -316,7 +336,7 @@ class AnalyticsService {
    */
   resetAnalytics(): void {
     this.store.clear();
-    console.log('[Analytics] Analytics data reset');
+    logInfo('[Analytics] Analytics data reset');
   }
 }
 

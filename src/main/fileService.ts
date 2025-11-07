@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { logInfo, logError } from './logUtil';
 
 const EXCLUDE_FILES = ['_do_not_use_ui_en_dev.json'];
 
@@ -67,7 +68,7 @@ class FileService {
     const inputPath = path.join(folderPath, 'input');
 
     if (!fs.existsSync(inputPath)) {
-      console.log('[FileService] input folder not found, skipping');
+      logInfo('[FileService] input folder not found, skipping');
       return;
     }
 
@@ -86,9 +87,9 @@ class FileService {
         this.inputFiles.set(file, data);
       }
 
-      console.log(`[FileService] Loaded ${this.inputFiles.size} input folder files`);
+      logInfo(`[FileService] Loaded ${this.inputFiles.size} input folder files`);
     } catch (error) {
-      console.error('[FileService] Failed to load input files:', error);
+      logError('[FileService] Failed to load input files:', error);
     }
   }
 

@@ -1,5 +1,6 @@
 import { fileService } from './fileService';
 import { openaiService } from './openaiService';
+import { logError } from './logUtil';
 
 interface SearchResult {
   id: string;
@@ -257,7 +258,7 @@ class SearchService {
         synonymsList: synonyms,
       };
     } catch (error) {
-      console.error('유의어 검색 오류:', error);
+      logError('유의어 검색 오류:', error);
       return { results: [], synonymsList: [] };
     }
   }
