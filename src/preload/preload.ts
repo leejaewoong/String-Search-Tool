@@ -1,5 +1,25 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
+// Main Process 로그를 DevTools 콘솔로 전달
+ipcRenderer.on('main-process-log', (_, logData: { level: string; message: string; args: any[]; timestamp: string }) => {
+  const { level, message, args, timestamp } = logData;
+  const prefix = `[Main Process ${timestamp}]`;
+
+  switch (level) {
+    case 'info':
+      console.log(prefix, message, ...args);
+      break;
+    case 'warn':
+      console.warn(prefix, message, ...args);
+      break;
+    case 'error':
+      console.error(prefix, message, ...args);
+      break;
+    default:
+      console.log(prefix, message, ...args);
+  }
+});
+
 contextBridge.exposeInMainWorld('electron', {
   searchStrings: (query: string, language: string) =>
     ipcRenderer.invoke('search-strings', query, language),
@@ -88,4 +108,10 @@ contextBridge.exposeInMainWorld('electron', {
 
   getPatchNotes: () =>
     ipcRenderer.invoke('get-patch-notes'),
+
+  getLogFilePath: () =>
+    ipcRenderer.invoke('get-log-file-path'),
+
+  openLogFile: () =>
+    ipcRenderer.invoke('open-log-file'),
 });

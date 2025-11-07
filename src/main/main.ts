@@ -1,22 +1,31 @@
+// 1. 최우선: 환경 변수 로딩에 필요한 모듈만 import
 import dotenv from 'dotenv';
 import { app, BrowserWindow, ipcMain, dialog, clipboard, shell } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import Store from 'electron-store';
+
+// 2. .env 파일 로드 (서비스 import 전에 실행해야 함!)
+const envPath = app.isPackaged
+  ? path.join(process.resourcesPath, '.env')  // 프로덕션: 앱 리소스 폴더
+  : path.join(__dirname, '../../.env');       // 개발: 프로젝트 루트
+
+dotenv.config({ path: envPath });
+
+// 3. 이제 환경 변수가 로드되었으므로 서비스들을 import (서비스 생성자에서 process.env 사용 가능)
+import { logInfo, logError, getLogFilePath } from './logUtil';
 import { fileService } from './fileService';
 import { searchService } from './searchService';
 import { gitService } from './gitService';
 import { analyticsService } from './analyticsService';
 import { openaiService } from './openaiService';
 
-// .env 파일 로드 (개발/프로덕션 모두 지원)
-const envPath = app.isPackaged
-  ? path.join(process.resourcesPath, '.env')  // 프로덕션: 앱 리소스 폴더
-  : path.join(__dirname, '../../.env');       // 개발: 프로젝트 루트
-
-dotenv.config({ path: envPath });
-console.log('[Main] .env loaded from:', envPath);
-console.log('[Main] OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
+// 4. 환경 변수 로딩 확인 로그
+logInfo('[Main] .env loaded from:', envPath);
+logInfo('[Main] OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
+logInfo('[Main] GA_MEASUREMENT_ID:', process.env.GA_MEASUREMENT_ID || 'NOT SET');
+logInfo('[Main] GA_API_SECRET exists:', !!process.env.GA_API_SECRET);
+logInfo('[Main] app.isPackaged:', app.isPackaged);
 
 const store = new Store();
 let mainWindow: BrowserWindow | null = null;
@@ -59,7 +68,7 @@ app.whenReady().then(() => {
   // 저장된 경로 자동 로드
   const savedPath = store.get('folderPath') as string;
   if (savedPath) {
-    fileService.loadFiles(savedPath).catch(console.error);
+    fileService.loadFiles(savedPath).catch(logError);
   }
 });
 
@@ -243,8 +252,20 @@ function registerIpcHandlers() {
       const content = await fs.readFile(patchNotesPath, 'utf-8');
       return content;
     } catch (error) {
-      console.error('Failed to read PATCH_NOTES.md:', error);
+      logError('Failed to read PATCH_NOTES.md:', error);
       return '# 패치 노트\n\n패치 노트를 불러올 수 없습니다.';
     }
+  });
+
+  // 로그 파일 경로 가져오기
+  ipcMain.handle('get-log-file-path', async () => {
+    return getLogFilePath();
+  });
+
+  // 로그 파일 열기
+  ipcMain.handle('open-log-file', async () => {
+    const logPath = getLogFilePath();
+    await shell.openPath(logPath);
+    return true;
   });
 }

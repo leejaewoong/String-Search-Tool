@@ -1,4 +1,5 @@
 import simpleGit, { SimpleGit } from 'simple-git';
+import { logError } from './logUtil';
 
 class GitService {
   async pull(folderPath: string): Promise<void> {
@@ -24,7 +25,7 @@ class GitService {
         });
       }
     } catch (error) {
-      console.error('Git log 조회 실패:', error);
+      logError('Git log 조회 실패:', error);
     }
 
     return '';

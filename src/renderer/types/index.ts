@@ -67,6 +67,8 @@ export interface ElectronAPI {
   getAppVersion: () => Promise<string>;
   openExternal: (url: string) => Promise<boolean>;
   getPatchNotes: () => Promise<string>;
+  getLogFilePath: () => Promise<string>;
+  openLogFile: () => Promise<boolean>;
 }
 
 declare global {
