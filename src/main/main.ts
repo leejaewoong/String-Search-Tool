@@ -84,6 +84,11 @@ app.on('activate', () => {
   }
 });
 
+// 앱 종료 전 세션 종료 이벤트 전송
+app.on('before-quit', () => {
+  analyticsService.endSession();
+});
+
 function registerIpcHandlers() {
   // 검색
   ipcMain.handle('search-strings', async (event, query, language) => {
