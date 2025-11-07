@@ -248,7 +248,9 @@ function registerIpcHandlers() {
   // 패치 노트 읽기
   ipcMain.handle('get-patch-notes', async () => {
     try {
-      const patchNotesPath = path.join(__dirname, '../PATCH_NOTES.md');
+      const patchNotesPath = app.isPackaged
+        ? path.join(process.resourcesPath, 'PATCH_NOTES.md')  // 프로덕션: resources 폴더
+        : path.join(__dirname, '../PATCH_NOTES.md');          // 개발: 프로젝트 루트
       const content = await fs.readFile(patchNotesPath, 'utf-8');
       return content;
     } catch (error) {
