@@ -129,9 +129,9 @@ electron .
 
 Analytics 데이터는 다음 위치에 저장됩니다:
 ```
-Windows: %APPDATA%\string-search\analytics.json
-macOS: ~/Library/Application Support/string-search/analytics.json
-Linux: ~/.config/string-search/analytics.json
+Windows: %APPDATA%\String-Finder\analytics.json
+macOS: ~/Library/Application Support/String-Finder/analytics.json
+Linux: ~/.config/String-Finder/analytics.json
 ```
 
 ## API 사용법

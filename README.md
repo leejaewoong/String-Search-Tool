@@ -1,4 +1,4 @@
-# String-Search
+# String-Finder
 
 GDD JSON 파일에서 문자열을 빠르게 검색하는 Windows 애플리케이션입니다.
 
@@ -16,7 +16,7 @@ string 작업 시 다음과 같은 불편을 해소하기 위해 개발했습니
 
 ### 설치
 
-String-Search-{version}-x64.exe 파일을 다운받아 로컬 디스크에 설치하세요.
+String-Finder-{version}-x64.exe 파일을 다운받아 로컬 디스크에 설치하세요.
 
 ### 활용
 

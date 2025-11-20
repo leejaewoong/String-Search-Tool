@@ -1,5 +1,5 @@
 {
-  "name": "string-search",
+  "name": "string-finder",
   "version": "0.1.0",
   "description": "GDD JSON 파일 문자열 검색 도구",
   "main": "build/main.js",

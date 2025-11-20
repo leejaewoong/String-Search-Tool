@@ -1,6 +1,6 @@
 {
-  "appId": "com.yourcompany.stringsearch",
-  "productName": "String-Search",
+  "appId": "com.yourcompany.stringfinder",
+  "productName": "String-Finder",
   "copyright": "Copyright © 2025",
   "electronDownload": {
     "cache": "${TMPDIR}/electron-download"
@@ -45,7 +45,7 @@
     "allowToChangeInstallationDirectory": true,
     "createDesktopShortcut": "always",
     "createStartMenuShortcut": true,
-    "shortcutName": "String-Search"
+    "shortcutName": "String-Finder"
   },
   "portable": {
     "artifactName": "${productName}-${version}-portable.${ext}"
