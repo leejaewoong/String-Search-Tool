@@ -33,6 +33,8 @@ class AnalyticsService {
   private userId: string;
   private isProduction: boolean;
   private ga4Enabled: boolean;
+  private sessionId: string = '';
+  private sessionStartTime: number = 0;
 
   constructor() {
     // 로컬 저장소 초기화
@@ -79,6 +81,39 @@ class AnalyticsService {
     } else if (GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') {
       logWarn('[Analytics] GA4 Measurement ID not configured');
     }
+
+    // 세션 시작
+    this.startSession();
+  }
+
+  /**
+   * 세션 시작
+   */
+  private startSession(): void {
+    this.sessionId = uuidv4();
+    this.sessionStartTime = Date.now();
+
+    logInfo('[Analytics] Session started:', this.sessionId);
+
+    // app_session_start 이벤트 전송 (GA4 예약 이벤트명 회피)
+    this.sendGA4Event('app_session_start', {
+      session_id: this.sessionId,
+    });
+  }
+
+  /**
+   * 세션 종료
+   */
+  endSession(): void {
+    const sessionDuration = Date.now() - this.sessionStartTime;
+
+    logInfo('[Analytics] Session ended:', this.sessionId, 'Duration:', sessionDuration, 'ms');
+
+    // app_session_end 이벤트 전송 (GA4 예약 이벤트명 회피)
+    this.sendGA4Event('app_session_end', {
+      session_id: this.sessionId,
+      session_duration_ms: sessionDuration,
+    });
   }
 
   /**
@@ -106,14 +141,25 @@ class AnalyticsService {
     }
 
     try {
+      // 세션 시작 이후 경과 시간 계산 (밀리초)
+      const engagementTime = this.sessionStartTime > 0
+        ? Date.now() - this.sessionStartTime
+        : 100;
+
       const payload = JSON.stringify({
         client_id: this.userId,
+        user_properties: {
+          session_id: {
+            value: this.sessionId
+          }
+        },
         events: [
           {
             name: eventName,
             params: {
               ...params,
-              engagement_time_msec: '100',
+              session_id: this.sessionId,  // 모든 이벤트에 세션 ID 포함
+              engagement_time_msec: String(engagementTime),
             },
           },
         ],
@@ -139,11 +185,16 @@ class AnalyticsService {
 
         res.on('end', () => {
           if (res.statusCode === 204) {
-            logInfo('[Analytics] Event sent to GA4:', eventName, params);
+            logInfo('[Analytics] Event sent to GA4:', eventName, {
+              ...params,
+              session_id: this.sessionId,
+              engagement_time_msec: engagementTime
+            });
           } else {
             logError('[Analytics] GA4 error - Status:', res.statusCode);
             logError('[Analytics] GA4 error - Response:', data);
             logError('[Analytics] GA4 error - Event:', eventName, params);
+            logError('[Analytics] GA4 error - Payload:', payload);
           }
         });
       });
