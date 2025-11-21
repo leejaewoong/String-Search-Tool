@@ -3,7 +3,7 @@
 ## 📁 프로젝트 구조
 
 ```
-string-search/
+String-Finder/
 ├── src/
 │   ├── main/                 # Electron 메인 프로세스
 │   │   ├── main.ts          # 메인 진입점
@@ -82,7 +82,7 @@ Windows에서 배포 파일 생성 시 **관리자 권한**이 필요합니다.
 2. 우클릭 → "관리자 권한으로 실행"
 3. 프로젝트 폴더로 이동 후 빌드:
    ```bash
-   cd "c:\Users\iamle\바탕 화면\project\String-Search"
+   cd "c:\Users\iamle\바탕 화면\project\String-Finder"
    npm run release
    ```
 
@@ -105,8 +105,8 @@ npm run release
 ```
 
 생성되는 파일:
-- `dist/String-Search-{version}-x64.exe` (인스톨러)
-- `dist/String-Search-{version}-portable.exe` (포터블)
+- `dist/String-Finder-{version}-x64.exe` (인스톨러)
+- `dist/String-Finder-{version}-portable.exe` (포터블)
 
 ### 개별 빌드:
 ```bash
@@ -116,14 +116,14 @@ npm run dist:portable  # 포터블만
 
 ### 💡 인스톨러 vs 포터블 버전
 
-**인스톨러 (`String-Search-{version}-x64.exe`)**
+**인스톨러 (`String-Finder-{version}-x64.exe`)**
 - Windows에 **설치**가 필요
 - Program Files에 파일 복사
 - 시작 메뉴에 바로가기 생성
 - 제어판에서 제거 가능
 - **일반 사용자에게 권장**
 
-**포터블 버전 (`String-Search-{version}-portable.exe`)**
+**포터블 버전 (`String-Finder-{version}-portable.exe`)**
 - **설치 불필요**, 실행 파일 하나로 완결
 - USB 드라이브에 담아 어디서든 실행 가능
 - 시스템에 흔적을 남기지 않음
@@ -132,7 +132,7 @@ npm run dist:portable  # 포터블만
 ### 📤 배포 방법
 
 다른 사용자에게는 **인스톨러 파일 하나만 공유**하면 됩니다:
-- `String-Search-{version}-x64.exe` 파일만 전달
+- `String-Finder-{version}-x64.exe` 파일만 전달
 - 사용자가 더블클릭하여 설치
 - 설치 후 시작 메뉴에서 실행
 
@@ -164,7 +164,7 @@ npm run dist:portable  # 포터블만
 ### 최종 사용자 모드
 
 1. **설치 파일 다운로드**
-   - `String-Search-{version}-x64.exe` 다운로드
+   - `String-Finder-{version}-x64.exe` 다운로드
    - 파일 더블클릭하여 설치
 
 2. **경로 설정**
